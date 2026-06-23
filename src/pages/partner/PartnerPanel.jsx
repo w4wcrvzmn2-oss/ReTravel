@@ -3,9 +3,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import {
   Package, BarChart2, Plus, Eye, Edit, Trash2,
   TrendingUp, Star, DollarSign, LogOut, Upload,
-  CheckCircle, Clock, AlertCircle,
+  CheckCircle, Clock, AlertCircle, ChevronRight,
 } from 'lucide-react'
 import useAuthStore from '../../store/useAuthStore'
+import useCommissionStore from '../../store/useCommissionStore'
 
 const DEMO_MY_TOURS = [
   { id: 1, title: 'Дубай: эксклюзивный тур', price: 95000, bookings: 12, revenue: 1140000, rating: 4.9, status: 'active', image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=200&q=80' },
@@ -90,22 +91,77 @@ export default function PartnerPanel() {
 }
 
 // ─── DASHBOARD ────────────────────────────────────────────────
+const TIER_COLORS = {
+  blue:   { bg: 'bg-blue-50 dark:bg-blue-900/20',   text: 'text-blue-600 dark:text-blue-400',   badge: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',   bar: 'bg-blue-500'   },
+  green:  { bg: 'bg-green-50 dark:bg-green-900/20', text: 'text-green-600 dark:text-green-400', badge: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300', bar: 'bg-green-500' },
+  violet: { bg: 'bg-violet-50 dark:bg-violet-900/20', text: 'text-violet-600 dark:text-violet-400', badge: 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300', bar: 'bg-violet-500' },
+  amber:  { bg: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-600 dark:text-amber-400',  badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',  bar: 'bg-amber-500'  },
+}
+
 function PartnerDashboard({ tours, totalRevenue, totalBookings }) {
+  const { getEffective, getNextTier, promos } = useCommissionStore()
+  const { rate, tier, activePromos } = getEffective(totalBookings)
+  const nextTier = getNextTier(totalBookings)
+  const tc = TIER_COLORS[tier.color] || TIER_COLORS.blue
+
+  // Прогресс до следующего уровня
+  const progress = nextTier
+    ? Math.min(100, ((totalBookings - tier.bookingsMin) / (nextTier.bookingsMin - tier.bookingsMin)) * 100)
+    : 100
+  const toNext = nextTier ? nextTier.bookingsMin - totalBookings : 0
+
   const stats = [
-    { label: 'Туров размещено', value: tours.length, icon: Package, color: 'text-accent-500', bg: 'bg-accent-50 dark:bg-accent-900/20' },
-    { label: 'Всего бронирований', value: totalBookings, icon: TrendingUp, color: 'text-green-500', bg: 'bg-green-50 dark:bg-green-900/20' },
-    { label: 'Общая выручка', value: (totalRevenue / 1e6).toFixed(1) + ' млн ₽', icon: DollarSign, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-    { label: 'Средний рейтинг', value: (tours.reduce((s, t) => s + t.rating, 0) / tours.length).toFixed(1), icon: Star, color: 'text-yellow-500', bg: 'bg-yellow-50 dark:bg-yellow-900/20' },
+    { label: 'Туров размещено',    value: tours.length,                                            icon: Package,   color: 'text-accent-500', bg: 'bg-accent-50 dark:bg-accent-900/20' },
+    { label: 'Всего бронирований', value: totalBookings,                                           icon: TrendingUp, color: 'text-green-500', bg: 'bg-green-50 dark:bg-green-900/20' },
+    { label: 'Общая выручка',      value: (totalRevenue / 1e6).toFixed(1) + ' млн ₽',             icon: DollarSign, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+    { label: 'Средний рейтинг',    value: (tours.reduce((s, t) => s + t.rating, 0) / tours.length).toFixed(1), icon: Star, color: 'text-yellow-500', bg: 'bg-yellow-50 dark:bg-yellow-900/20' },
   ]
 
   return (
     <div>
       <div className="flex items-start justify-between mb-6">
         <h1 className="text-2xl font-black text-gray-900 dark:text-white">Обзор</h1>
-        <div className="text-right">
-          <p className="text-xs text-gray-400">Комиссия платформы</p>
-          <p className="text-sm font-bold text-gray-900 dark:text-white">12% с каждой брони</p>
+      </div>
+
+      {/* ── Комиссионная карточка ── */}
+      <div className={`card p-5 mb-6 border ${tc.bg} flex flex-col sm:flex-row sm:items-center gap-5`}
+           style={{ borderColor: 'transparent' }}>
+        <div className="flex items-center gap-4 flex-1">
+          <div className={`w-14 h-14 rounded-2xl ${tc.bg} border-2 flex items-center justify-center shrink-0`}
+               style={{ borderColor: 'currentColor' }}>
+            <span className={`text-2xl font-black ${tc.text}`}>{rate}%</span>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-0.5">
+              <span className={`badge text-xs font-semibold ${tc.badge}`}>{tier.label}</span>
+              <span className="text-xs text-gray-400">текущая ставка комиссии</span>
+            </div>
+            {nextTier ? (
+              <div className="mt-2 w-full max-w-xs">
+                <div className="flex justify-between text-xs text-gray-400 mb-1">
+                  <span>{totalBookings} броней</span>
+                  <span>{toNext} до уровня «{nextTier.label}» ({nextTier.rate}%)</span>
+                </div>
+                <div className="h-1.5 bg-gray-200 dark:bg-dark-700 rounded-full overflow-hidden">
+                  <div className={`h-full ${tc.bar} rounded-full transition-all`} style={{ width: `${progress}%` }} />
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-gray-400 mt-1">Максимальный уровень — так держать!</p>
+            )}
+          </div>
         </div>
+
+        {/* Активные акции */}
+        {activePromos.length > 0 && (
+          <div className="flex flex-wrap gap-2 sm:justify-end">
+            {activePromos.map((p) => (
+              <span key={p.id} className="flex items-center gap-1 text-xs bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 px-2.5 py-1.5 rounded-xl font-medium">
+                {p.badge} {p.label}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
@@ -146,11 +202,11 @@ function PartnerDashboard({ tours, totalRevenue, totalBookings }) {
           <h2 className="font-bold text-gray-900 dark:text-white mb-4">Условия работы</h2>
           <div className="space-y-3 text-sm">
             {[
-              { icon: CheckCircle, text: 'Комиссия 12% с каждого бронирования', color: 'text-green-500' },
+              { icon: CheckCircle, text: `Ваша комиссия: ${rate}% (уровень «${tier.label}»)`, color: 'text-green-500' },
               { icon: CheckCircle, text: 'Выплата выручки каждые 2 недели', color: 'text-green-500' },
               { icon: CheckCircle, text: 'Неограниченное число туров', color: 'text-green-500' },
-              { icon: Clock, text: 'Модерация нового тура: 1–2 рабочих дня', color: 'text-yellow-500' },
-              { icon: AlertCircle, text: 'Минимальный рейтинг для листинга: 4.0', color: 'text-red-500' },
+              { icon: Clock,        text: 'Модерация нового тура: 1–2 рабочих дня', color: 'text-yellow-500' },
+              { icon: AlertCircle,  text: 'Минимальный рейтинг для листинга: 4.0', color: 'text-red-500' },
             ].map((item, i) => {
               const Icon = item.icon
               return (
@@ -161,6 +217,21 @@ function PartnerDashboard({ tours, totalRevenue, totalBookings }) {
               )
             })}
           </div>
+
+          {/* Путь к следующему уровню */}
+          {nextTier && (
+            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-dark-700">
+              <p className="text-xs text-gray-400 mb-2">Как снизить комиссию:</p>
+              <div className="flex items-center gap-2 text-xs">
+                <span className={`badge ${tc.badge}`}>{tier.label} {tier.rate}%</span>
+                <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
+                <span className={`badge ${TIER_COLORS[nextTier.color]?.badge || ''}`}>
+                  {nextTier.label} {nextTier.rate}%
+                </span>
+                <span className="text-gray-400">через {toNext} броней</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -319,14 +390,23 @@ function AddTour({ onSuccess }) {
           <p className="text-xs text-gray-400 mt-1">PNG, JPG до 10 МБ · рекомендуется 1200×800</p>
         </div>
 
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 text-sm text-yellow-700 dark:text-yellow-400">
-          После отправки тур пройдёт модерацию (1–2 дня). Комиссия платформы — 12%.
-        </div>
+        <CommissionNotice />
 
         <button type="submit" disabled={loading} className="btn-primary w-full justify-center py-3">
           {loading ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Отправить на модерацию'}
         </button>
       </form>
+    </div>
+  )
+}
+
+function CommissionNotice() {
+  const { getEffective } = useCommissionStore()
+  const totalBookings = DEMO_MY_TOURS.reduce((s, t) => s + t.bookings, 0)
+  const { rate, tier } = getEffective(totalBookings)
+  return (
+    <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 text-sm text-yellow-700 dark:text-yellow-400">
+      После отправки тур пройдёт модерацию (1–2 дня). Ваша текущая комиссия — <strong>{rate}%</strong> (уровень «{tier.label}»).
     </div>
   )
 }

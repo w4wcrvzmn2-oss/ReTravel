@@ -3,9 +3,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Users, Package, Star, Settings,
   TrendingUp, ShoppingCart, Bell, LogOut, ChevronRight,
-  Plus, Search, Edit, Trash2, Eye, BarChart2,
+  Plus, Search, Edit, Trash2, Eye, BarChart2, Percent,
+  ToggleLeft, ToggleRight, RotateCcw,
 } from 'lucide-react'
 import useAuthStore from '../../store/useAuthStore'
+import useCommissionStore from '../../store/useCommissionStore'
 import { tours as toursApi, admin as adminApi } from '../../lib/api'
 import { tours as staticTours } from '../../data/tours'
 
@@ -32,11 +34,12 @@ const DEMO_ORDERS = [
 ]
 
 const TABS = [
-  { id: 'dashboard', label: 'Дашборд', icon: LayoutDashboard },
-  { id: 'tours', label: 'Туры', icon: Package },
-  { id: 'users', label: 'Пользователи', icon: Users },
-  { id: 'orders', label: 'Заказы', icon: ShoppingCart },
-  { id: 'reviews', label: 'Отзывы', icon: Star },
+  { id: 'dashboard',   label: 'Дашборд',       icon: LayoutDashboard },
+  { id: 'tours',       label: 'Туры',           icon: Package },
+  { id: 'users',       label: 'Пользователи',   icon: Users },
+  { id: 'orders',      label: 'Заказы',         icon: ShoppingCart },
+  { id: 'reviews',     label: 'Отзывы',         icon: Star },
+  { id: 'commissions', label: 'Комиссии',       icon: Percent },
 ]
 
 export default function AdminPanel() {
@@ -112,11 +115,12 @@ export default function AdminPanel() {
       {/* ─── main ────────────────────────────────────────── */}
       <main className="flex-1 min-w-0 overflow-auto">
         <div className="p-8">
-          {tab === 'dashboard' && <Dashboard />}
-          {tab === 'tours' && <ToursTab tours={tours} search={search} setSearch={setSearch} />}
-          {tab === 'users' && <UsersTab />}
-          {tab === 'orders' && <OrdersTab />}
-          {tab === 'reviews' && <ReviewsTab />}
+          {tab === 'dashboard'   && <Dashboard />}
+          {tab === 'tours'       && <ToursTab tours={tours} search={search} setSearch={setSearch} />}
+          {tab === 'users'       && <UsersTab />}
+          {tab === 'orders'      && <OrdersTab />}
+          {tab === 'reviews'     && <ReviewsTab />}
+          {tab === 'commissions' && <CommissionsTab />}
         </div>
       </main>
     </div>
@@ -448,6 +452,191 @@ function ReviewsTab() {
           </div>
         ))}
       </div>
+    </div>
+  )
+}
+
+// ─── COMMISSIONS TAB ──────────────────────────────────────────
+function CommissionsTab() {
+  const { tiers, promos, setTierRate, togglePromo, getEffective, resetToDefaults } = useCommissionStore()
+  const [simBookings, setSimBookings] = useState(7)
+  const [saved, setSaved] = useState(false)
+
+  const sim = getEffective(simBookings)
+
+  const tierColors = {
+    blue:   { bg: 'bg-blue-50 dark:bg-blue-900/20',   border: 'border-blue-200 dark:border-blue-800',   text: 'text-blue-600 dark:text-blue-400',   badge: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' },
+    green:  { bg: 'bg-green-50 dark:bg-green-900/20', border: 'border-green-200 dark:border-green-800', text: 'text-green-600 dark:text-green-400', badge: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' },
+    violet: { bg: 'bg-violet-50 dark:bg-violet-900/20', border: 'border-violet-200 dark:border-violet-800', text: 'text-violet-600 dark:text-violet-400', badge: 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300' },
+    amber:  { bg: 'bg-amber-50 dark:bg-amber-900/20', border: 'border-amber-200 dark:border-amber-800', text: 'text-amber-600 dark:text-amber-400',  badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' },
+  }
+
+  const handleSave = () => {
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
+
+  return (
+    <div className="max-w-3xl">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-black text-gray-900 dark:text-white">Комиссии партнёров</h1>
+          <p className="text-sm text-gray-400 mt-0.5">Настройте ставки по уровням и управляйте акциями</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => { resetToDefaults(); setSaved(true); setTimeout(() => setSaved(false), 2000) }}
+            className="flex items-center gap-1.5 px-3 py-2 text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-dark-700 transition-colors"
+          >
+            <RotateCcw className="w-4 h-4" /> Сбросить
+          </button>
+          <button
+            onClick={handleSave}
+            className={`btn-primary py-2 px-4 text-sm transition-all ${saved ? 'bg-green-500 hover:bg-green-600' : ''}`}
+          >
+            {saved ? '✓ Сохранено' : 'Сохранить'}
+          </button>
+        </div>
+      </div>
+
+      {/* ── Уровни ── */}
+      <section className="mb-8">
+        <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+          Уровни комиссии
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          {tiers.map((tier) => {
+            const c = tierColors[tier.color] || tierColors.blue
+            return (
+              <div key={tier.id} className={`card p-5 border ${c.border} ${c.bg}`}>
+                <div className="flex items-center justify-between mb-3">
+                  <span className={`badge text-xs font-semibold ${c.badge}`}>{tier.label}</span>
+                  {tier.manual && (
+                    <span className="text-[10px] text-gray-400 bg-gray-100 dark:bg-dark-700 px-1.5 py-0.5 rounded">ручной</span>
+                  )}
+                </div>
+                {!tier.manual && (
+                  <p className="text-xs text-gray-400 mb-3">
+                    {tier.bookingsMin}–{tier.bookingsMax === 9999 ? '∞' : tier.bookingsMax} броней
+                  </p>
+                )}
+                {tier.manual && (
+                  <p className="text-xs text-gray-400 mb-3">назначается вручную</p>
+                )}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={0}
+                    max={50}
+                    value={tier.rate}
+                    onChange={(e) => setTierRate(tier.id, e.target.value)}
+                    className={`w-16 text-center text-xl font-black bg-white dark:bg-dark-800 border ${c.border} rounded-xl py-1.5 ${c.text} focus:outline-none focus:ring-2 focus:ring-current/20`}
+                  />
+                  <span className={`text-lg font-bold ${c.text}`}>%</span>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+        <p className="text-xs text-gray-400 mt-2">
+          Уровни назначаются автоматически по суммарному числу броней партнёра. «Эксклюзив» — только вручную.
+        </p>
+      </section>
+
+      {/* ── Акции ── */}
+      <section className="mb-8">
+        <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+          Акции и спецусловия
+        </h2>
+        <div className="space-y-3">
+          {promos.map((p) => (
+            <div
+              key={p.id}
+              className={`card p-4 flex items-start gap-4 transition-opacity ${p.active ? '' : 'opacity-60'}`}
+            >
+              <span className="text-2xl shrink-0 mt-0.5">{p.badge}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white">{p.label}</span>
+                  <span className={`badge text-[10px] ${p.type === 'fixed' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'}`}>
+                    {p.type === 'fixed' ? 'фиксированная' : `−${p.rate}%`}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-400">{p.description}</p>
+              </div>
+              <button
+                onClick={() => togglePromo(p.id)}
+                className="shrink-0 mt-0.5"
+                title={p.active ? 'Выключить акцию' : 'Включить акцию'}
+              >
+                {p.active
+                  ? <ToggleRight className="w-8 h-8 text-primary-500" />
+                  : <ToggleLeft  className="w-8 h-8 text-gray-300 dark:text-dark-600" />}
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Симулятор ── */}
+      <section>
+        <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+          Симулятор ставки
+        </h2>
+        <div className="card p-5">
+          <div className="flex flex-wrap items-center gap-4 mb-4">
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Число броней у партнёра</label>
+              <input
+                type="number"
+                min={0}
+                max={200}
+                value={simBookings}
+                onChange={(e) => setSimBookings(Number(e.target.value))}
+                className="input-field w-28 text-center font-bold"
+              />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mt-4">
+                <div>
+                  <p className="text-xs text-gray-400">Уровень</p>
+                  <p className="font-bold text-gray-900 dark:text-white">{sim.tier.label}</p>
+                </div>
+                <span className="text-gray-300 dark:text-dark-600">→</span>
+                <div>
+                  <p className="text-xs text-gray-400">Базовая ставка</p>
+                  <p className="font-bold text-gray-900 dark:text-white">{sim.tier.rate}%</p>
+                </div>
+                {sim.activePromos.filter((p) => p.type === 'discount').length > 0 && (
+                  <>
+                    <span className="text-gray-300 dark:text-dark-600">→</span>
+                    <div>
+                      <p className="text-xs text-gray-400">После скидок</p>
+                      <p className="font-bold text-primary-500">{sim.rate}%</p>
+                    </div>
+                  </>
+                )}
+                <div className="ml-auto">
+                  <p className="text-xs text-gray-400">Итоговая ставка</p>
+                  <p className="text-2xl font-black text-green-500">{sim.rate}%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          {sim.activePromos.length > 0 && (
+            <div className="border-t border-gray-100 dark:border-dark-700 pt-3 mt-2">
+              <p className="text-xs text-gray-400 mb-1.5">Активные акции:</p>
+              <div className="flex flex-wrap gap-2">
+                {sim.activePromos.map((p) => (
+                  <span key={p.id} className="flex items-center gap-1 text-xs bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 px-2.5 py-1 rounded-lg">
+                    {p.badge} {p.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   )
 }
