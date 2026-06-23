@@ -2,9 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { User, Mail, Calendar, Package, LogOut, ChevronRight, MapPin, Heart } from 'lucide-react'
 import useAuthStore from '../store/useAuthStore'
-import useCartStore from '../store/useCartStore'
-import useFavoritesStore from '../store/useFavoritesStore'
-import { tours } from '../data/tours'
+import { orders as ordersApi, favorites as favoritesApi } from '../lib/api'
 import TourCard from '../components/ui/TourCard'
 
 function formatPrice(n) {
@@ -18,20 +16,44 @@ const TABS = [
 
 export default function Cabinet() {
   const { user, logout } = useAuthStore()
-  const orders = useCartStore((s) => s.orders)
-  const { ids: favIds } = useFavoritesStore()
   const navigate = useNavigate()
   const [tab, setTab] = useState('orders')
+  const [orders, setOrders] = useState([])
+  const [favTours, setFavTours] = useState([])
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     document.title = 'Личный кабинет — ReTravel'
-    if (!user) navigate('/auth')
+    if (!user) { navigate('/auth'); return }
+    loadOrders()
+    loadFavorites()
   }, [user])
+
+  async function loadOrders() {
+    setLoading(true)
+    try {
+      const data = await ordersApi.list()
+      setOrders(data)
+    } catch {
+      setOrders([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function loadFavorites() {
+    try {
+      const data = await favoritesApi.list()
+      setFavTours(data)
+    } catch {
+      setFavTours([])
+    }
+  }
 
   if (!user) return null
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
     navigate('/')
   }
 
@@ -41,8 +63,6 @@ export default function Cabinet() {
     .slice(0, 2)
     .join('')
     .toUpperCase()
-
-  const favTours = tours.filter((t) => favIds.includes(t.id))
 
   return (
     <div className="pt-24 min-h-screen bg-gray-50 dark:bg-dark-900">
@@ -66,12 +86,12 @@ export default function Cabinet() {
                   <Mail className="w-4 h-4 text-primary-500 shrink-0" />
                   <span className="truncate">{user.email}</span>
                 </div>
-                {user.memberSince && (
+                {(user.memberSince || user.member_since) && (
                   <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
                     <Calendar className="w-4 h-4 text-primary-500 shrink-0" />
                     <span>
                       С нами с{' '}
-                      {new Date(user.memberSince).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })}
+                      {new Date(user.memberSince || user.member_since).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })}
                     </span>
                   </div>
                 )}
@@ -81,7 +101,7 @@ export default function Cabinet() {
                 </div>
                 <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
                   <Heart className="w-4 h-4 text-red-500 shrink-0" />
-                  <span>{favIds.length} в избранном</span>
+                  <span>{favTours.length} в избранном</span>
                 </div>
               </div>
 
@@ -93,7 +113,6 @@ export default function Cabinet() {
               </button>
             </div>
 
-            {/* быстрые ссылки */}
             <div className="card p-4">
               <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
                 Быстрые ссылки
@@ -118,9 +137,8 @@ export default function Cabinet() {
             </div>
           </div>
 
-          {/* правая часть: вкладки */}
+          {/* правая часть */}
           <div className="lg:col-span-2">
-            {/* вкладки */}
             <div className="flex gap-1 mb-5 bg-gray-100 dark:bg-dark-800 p-1 rounded-xl">
               {TABS.map((t) => {
                 const Icon = t.icon
@@ -137,9 +155,9 @@ export default function Cabinet() {
                   >
                     <Icon className="w-4 h-4" />
                     {t.label}
-                    {t.id === 'favorites' && favIds.length > 0 && (
+                    {t.id === 'favorites' && favTours.length > 0 && (
                       <span className="bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                        {favIds.length}
+                        {favTours.length}
                       </span>
                     )}
                   </button>
@@ -147,11 +165,14 @@ export default function Cabinet() {
               })}
             </div>
 
-            {/* вкладка: заказы */}
             {tab === 'orders' && (
               <div className="card p-6">
                 <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-5">Мои бронирования</h2>
-                {orders.length === 0 ? (
+                {loading ? (
+                  <div className="space-y-3">
+                    {[1, 2].map((i) => <div key={i} className="h-24 rounded-xl bg-gray-100 dark:bg-dark-700 animate-pulse" />)}
+                  </div>
+                ) : orders.length === 0 ? (
                   <div className="text-center py-12">
                     <div className="text-5xl mb-4">✈️</div>
                     <p className="text-gray-500 dark:text-gray-400 mb-4">Пока нет ни одного бронирования</p>
@@ -165,7 +186,7 @@ export default function Cabinet() {
                           <div>
                             <p className="text-xs text-gray-400 mb-0.5">Заказ #{order.id}</p>
                             <p className="text-xs text-gray-400">
-                              {new Date(order.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+                              {new Date(order.created_at || order.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
                             </p>
                           </div>
                           <span className="badge bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
@@ -173,25 +194,25 @@ export default function Cabinet() {
                           </span>
                         </div>
                         <div className="space-y-2 mb-3">
-                          {order.items.map((item) => (
-                            <div key={item.tour.id} className="flex items-center gap-3">
-                              <img src={item.tour.image} alt={item.tour.title} className="w-12 h-12 rounded-lg object-cover shrink-0" />
+                          {(order.items || []).map((item, idx) => (
+                            <div key={idx} className="flex items-center gap-3">
+                              <img src={item.tour?.image} alt={item.tour?.title} className="w-12 h-12 rounded-lg object-cover shrink-0" />
                               <div className="flex-1 min-w-0">
-                                <p className="font-medium text-gray-900 dark:text-white text-sm truncate">{item.tour.title}</p>
+                                <p className="font-medium text-gray-900 dark:text-white text-sm truncate">{item.tour?.title}</p>
                                 <p className="text-xs text-gray-400 flex items-center gap-1">
                                   <MapPin className="w-3 h-3" />
-                                  {item.tour.city}, {item.tour.country} · {item.travelers} чел.
+                                  {item.tour?.city} · {item.travelers} чел.
                                 </p>
                               </div>
                               <p className="text-sm font-bold text-accent-500 shrink-0">
-                                {formatPrice(item.tour.price * item.travelers)}
+                                {formatPrice((item.tour?.price || 0) * (item.travelers || 1))}
                               </p>
                             </div>
                           ))}
                         </div>
                         <div className="flex justify-between items-center pt-3 border-t border-gray-100 dark:border-dark-700">
                           <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {order.contact.name} · {order.contact.phone}
+                            {order.contact?.name} · {order.contact?.phone}
                           </div>
                           <div className="font-bold text-gray-900 dark:text-white">
                             Итого: {formatPrice(order.total)}
@@ -204,7 +225,6 @@ export default function Cabinet() {
               </div>
             )}
 
-            {/* вкладка: избранное */}
             {tab === 'favorites' && (
               <div>
                 {favTours.length === 0 ? (

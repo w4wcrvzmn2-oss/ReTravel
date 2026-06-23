@@ -1,11 +1,13 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Shield, Zap, HeadphonesIcon, ChevronRight, Star } from 'lucide-react'
 import SearchBar from '../components/ui/SearchBar'
 import TourCard from '../components/ui/TourCard'
 import DestinationCard from '../components/ui/DestinationCard'
-import { destinations } from '../data/destinations'
-import { tours } from '../data/tours'
+import { destinations as destinationsApi, tours as toursApi } from '../lib/api'
+// fallback пока API недоступен
+import { destinations as staticDestinations } from '../data/destinations'
+import { tours as staticTours } from '../data/tours'
 
 const stats = [
   { value: '50 000+', label: 'довольных клиентов' },
@@ -35,19 +37,32 @@ const howItWorks = [
   },
 ]
 
-const popularDestinations = destinations.filter((d) => d.popular).slice(0, 8)
-const featuredTours = tours.filter((t) => t.isHot || t.rating >= 4.7).slice(0, 6)
-
 export default function Home() {
+  const [popularDestinations, setPopularDestinations] = useState(
+    staticDestinations.filter((d) => d.popular).slice(0, 8)
+  )
+  const [featuredTours, setFeaturedTours] = useState(
+    staticTours.filter((t) => t.isHot || t.rating >= 4.7).slice(0, 6)
+  )
+
   useEffect(() => {
     document.title = 'ReTravel — найдите идеальное путешествие'
+
+    // загружаем данные из API, не ломаем страницу если API недоступен
+    destinationsApi.list().then((data) => {
+      const popular = data.filter((d) => d.popular).slice(0, 8)
+      if (popular.length) setPopularDestinations(popular)
+    }).catch(() => {})
+
+    toursApi.list({ is_hot: 'true', sort: 'rating', limit: 6 }).then((data) => {
+      if (data.tours?.length) setFeaturedTours(data.tours)
+    }).catch(() => {})
   }, [])
 
   return (
     <div>
       {/* ===================== HERO ===================== */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
-        {/* фоновое изображение */}
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1920&q=80"
@@ -58,7 +73,6 @@ export default function Home() {
         </div>
 
         <div className="relative page-container w-full py-32">
-          {/* заголовок */}
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-6 border border-white/20">
               <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
@@ -76,12 +90,10 @@ export default function Home() {
             </p>
           </div>
 
-          {/* форма поиска */}
           <div className="max-w-4xl mx-auto">
             <SearchBar />
           </div>
 
-          {/* популярные запросы */}
           <div className="flex flex-wrap justify-center gap-2 mt-6">
             {['🇹🇷 Турция', '🇪🇬 Египет', '🇦🇪 Дубай', '🇹🇭 Таиланд', '🇬🇷 Греция'].map((tag) => {
               const id = tag.includes('Турция')
@@ -188,7 +200,7 @@ export default function Home() {
               <p className="section-sub">Лучшие туры по специальным ценам</p>
             </div>
             <Link
-              to="/search?isHot=true"
+              to="/search?is_hot=true"
               className="hidden md:flex items-center gap-1 text-primary-500 hover:text-primary-600 font-medium text-sm"
             >
               Все горящие <ChevronRight className="w-4 h-4" />

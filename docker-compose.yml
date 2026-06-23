@@ -1,0 +1,138 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-retravel}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
+      POSTGRES_DB: retravel
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-retravel}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD:-redispass}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redispass}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  auth:
+    build: ./services/auth
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-retravel}:${POSTGRES_PASSWORD:-secret}@postgres:5432/retravel
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redispass}@redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  tours:
+    build: ./services/tours
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PORT: 3002
+      DATABASE_URL: postgresql://${POSTGRES_USER:-retravel}:${POSTGRES_PASSWORD:-secret}@postgres:5432/retravel
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redispass}@redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  flights:
+    build: ./services/flights
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PORT: 3003
+      DATABASE_URL: postgresql://${POSTGRES_USER:-retravel}:${POSTGRES_PASSWORD:-secret}@postgres:5432/retravel
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  hotels:
+    build: ./services/hotels
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PORT: 3004
+      DATABASE_URL: postgresql://${POSTGRES_USER:-retravel}:${POSTGRES_PASSWORD:-secret}@postgres:5432/retravel
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  orders:
+    build: ./services/orders
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PORT: 3005
+      DATABASE_URL: postgresql://${POSTGRES_USER:-retravel}:${POSTGRES_PASSWORD:-secret}@postgres:5432/retravel
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  reviews:
+    build: ./services/reviews
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PORT: 3006
+      DATABASE_URL: postgresql://${POSTGRES_USER:-retravel}:${POSTGRES_PASSWORD:-secret}@postgres:5432/retravel
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  notifications:
+    build: ./services/notifications
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PORT: 3007
+      DATABASE_URL: postgresql://${POSTGRES_USER:-retravel}:${POSTGRES_PASSWORD:-secret}@postgres:5432/retravel
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  nginx:
+    build: ./gateway
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - certbot_www:/var/www/certbot
+      - certbot_conf:/etc/letsencrypt
+    depends_on:
+      - auth
+      - tours
+      - flights
+      - hotels
+      - orders
+      - reviews
+
+volumes:
+  postgres_data:
+  redis_data:
+  certbot_www:
+  certbot_conf:

@@ -17,6 +17,7 @@ import Flights from './pages/Flights'
 import Hotels from './pages/Hotels'
 import Compare from './pages/Compare'
 import useThemeStore from './store/useThemeStore'
+import useAuthStore from './store/useAuthStore'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -32,9 +33,11 @@ const NO_HEADER = []
 export default function App() {
   const { isDark, hydrate } = useThemeStore()
   const { pathname } = useLocation()
+  const initAuth = useAuthStore((s) => s.init)
 
   useEffect(() => {
     hydrate(isDark)
+    initAuth()
   }, [])
 
   const showFooter = !NO_FOOTER.includes(pathname)

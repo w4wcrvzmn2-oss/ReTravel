@@ -1,0 +1,55 @@
+version: '3.9'
+
+# docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+services:
+  nginx:
+    volumes:
+      - ./gateway/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - certbot_www:/var/www/certbot:ro
+      - certbot_conf:/etc/letsencrypt:ro
+
+  postgres:
+    ports: []
+
+  auth:
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+
+  tours:
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          memory: 256m
+
+  flights:
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+
+  hotels:
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+
+  orders:
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+
+  reviews:
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+
+  notifications:
+    deploy:
+      resources:
+        limits:
+          memory: 128m

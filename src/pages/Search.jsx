@@ -1,9 +1,9 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { SlidersHorizontal, X, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
 import TourCard from '../components/ui/TourCard'
 import SearchBar from '../components/ui/SearchBar'
-import { tours } from '../data/tours'
+import { tours as toursApi } from '../lib/api'
 import { destinations } from '../data/destinations'
 
 const CATEGORIES = [
@@ -34,6 +34,10 @@ export default function Search() {
   const [searchParams] = useSearchParams()
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [page, setPage] = useState(1)
+  const [tours, setTours] = useState([])
+  const [total, setTotal] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+  const [loading, setLoading] = useState(false)
 
   const [filters, setFilters] = useState({
     destination: searchParams.get('destination') || '',
@@ -42,14 +46,42 @@ export default function Search() {
     stars: [],
     priceMax: 250000,
     sort: 'rating',
-    isHot: searchParams.get('isHot') === 'true',
+    isHot: searchParams.get('is_hot') === 'true',
   })
 
   useEffect(() => {
     document.title = 'Поиск туров — ReTravel'
-    const dest = searchParams.get('destination')
-    if (dest) setFilters((f) => ({ ...f, destination: dest }))
   }, [])
+
+  const fetchTours = useCallback(async () => {
+    setLoading(true)
+    try {
+      const params = {
+        page,
+        limit: PER_PAGE,
+        sort: filters.sort,
+        ...(filters.destination && { destination: filters.destination }),
+        ...(filters.categories.length && { category: filters.categories.join(',') }),
+        ...(filters.meals.length && { meal_type: filters.meals.join(',') }),
+        ...(filters.stars.length && { stars: filters.stars.join(',') }),
+        ...(filters.priceMax < 250000 && { price_max: filters.priceMax }),
+        ...(filters.isHot && { is_hot: 'true' }),
+      }
+
+      const data = await toursApi.list(params)
+      setTours(data.tours || [])
+      setTotal(data.total || 0)
+      setTotalPages(data.pages || 0)
+    } catch {
+      // API пока недоступен — ничего не ломаем
+    } finally {
+      setLoading(false)
+    }
+  }, [filters, page])
+
+  useEffect(() => {
+    fetchTours()
+  }, [fetchTours])
 
   // при смене фильтров сбрасываем на первую страницу
   useEffect(() => { setPage(1) }, [filters])
@@ -62,24 +94,6 @@ export default function Search() {
       [key]: f[key].includes(val) ? f[key].filter((v) => v !== val) : [...f[key], val],
     }))
 
-  const filtered = useMemo(() => {
-    let result = [...tours]
-    if (filters.destination) result = result.filter((t) => t.destination === filters.destination)
-    if (filters.isHot) result = result.filter((t) => t.isHot)
-    if (filters.categories.length) result = result.filter((t) => filters.categories.includes(t.category))
-    if (filters.meals.length) result = result.filter((t) => filters.meals.includes(t.mealType))
-    if (filters.stars.length) result = result.filter((t) => filters.stars.includes(t.hotelStars))
-    result = result.filter((t) => t.price <= filters.priceMax)
-    if (filters.sort === 'price_asc') result.sort((a, b) => a.price - b.price)
-    else if (filters.sort === 'price_desc') result.sort((a, b) => b.price - a.price)
-    else if (filters.sort === 'rating') result.sort((a, b) => b.rating - a.rating)
-    else if (filters.sort === 'duration') result.sort((a, b) => b.nights - a.nights)
-    return result
-  }, [filters])
-
-  const totalPages = Math.ceil(filtered.length / PER_PAGE)
-  const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE)
-
   const activeDestination = destinations.find((d) => d.id === filters.destination)
 
   const resetFilters = () => {
@@ -91,7 +105,6 @@ export default function Search() {
 
   return (
     <div className="pt-20 min-h-screen">
-      {/* шапка поиска */}
       <div className="bg-dark-900 py-8">
         <div className="page-container">
           <h1 className="text-2xl font-bold text-white mb-5">
@@ -103,17 +116,14 @@ export default function Search() {
 
       <div className="page-container py-8">
         <div className="flex gap-8">
-          {/* фильтры */}
           <aside className="shrink-0 w-64 hidden lg:block">
             <FilterPanel filters={filters} setFilter={setFilter} toggleArr={toggleArr} hasActive={hasActiveFilters} onReset={resetFilters} />
           </aside>
 
-          {/* основной контент */}
           <div className="flex-1 min-w-0">
-            {/* тулбар */}
             <div className="flex items-center justify-between gap-4 mb-6">
               <p className="text-gray-500 dark:text-gray-400 text-sm">
-                Найдено <span className="font-semibold text-gray-900 dark:text-white">{filtered.length}</span> туров
+                Найдено <span className="font-semibold text-gray-900 dark:text-white">{total}</span> туров
               </p>
               <div className="flex items-center gap-3">
                 <button
@@ -141,8 +151,13 @@ export default function Search() {
               </div>
             </div>
 
-            {/* результаты */}
-            {paginated.length === 0 ? (
+            {loading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                {Array.from({ length: PER_PAGE }).map((_, i) => (
+                  <div key={i} className="card h-80 animate-pulse bg-gray-100 dark:bg-dark-800" />
+                ))}
+              </div>
+            ) : tours.length === 0 ? (
               <div className="card p-12 text-center">
                 <div className="text-5xl mb-4">😞</div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Туры не найдены</h3>
@@ -152,12 +167,11 @@ export default function Search() {
             ) : (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                  {paginated.map((tour) => (
+                  {tours.map((tour) => (
                     <TourCard key={tour.id} tour={tour} />
                   ))}
                 </div>
 
-                {/* пагинация */}
                 {totalPages > 1 && (
                   <div className="flex items-center justify-center gap-2 mt-8">
                     <button
@@ -198,7 +212,6 @@ export default function Search() {
         </div>
       </div>
 
-      {/* мобильный фильтр-дровер */}
       {filtersOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/50" onClick={() => setFiltersOpen(false)} />

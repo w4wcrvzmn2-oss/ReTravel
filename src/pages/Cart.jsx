@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Trash2, MapPin, Clock, Users, ShoppingCart, Check, Tag, X } from 'lucide-react'
 import useCartStore from '../store/useCartStore'
 import useAuthStore from '../store/useAuthStore'
+import { orders as ordersApi } from '../lib/api'
 
 function formatPrice(n) {
   return n.toLocaleString('ru-RU') + ' ₽'
@@ -74,16 +75,30 @@ export default function Cart() {
     return Object.keys(errs).length === 0
   }
 
-  const handleOrder = (e) => {
+  const handleOrder = async (e) => {
     e.preventDefault()
     if (!validateCheckout()) return
     setLoading(true)
-    setTimeout(() => {
+    try {
+      const placed = await ordersApi.create({
+        items,
+        contact: form,
+        total: Math.round(total),
+        promo_code: promoApplied?.code || null,
+        discount_percent: Math.round(discount * 100),
+      })
+      // локально тоже сохраняем на случай если нет авторизации
+      placeOrder({ ...form, promoCode: promoApplied?.code, discountPercent: discount * 100, finalTotal: total })
+      setOrder(placed)
+      setStep('success')
+    } catch {
+      // fallback: сохраняем только локально
       const placed = placeOrder({ ...form, promoCode: promoApplied?.code, discountPercent: discount * 100, finalTotal: total })
       setOrder(placed)
       setStep('success')
+    } finally {
       setLoading(false)
-    }, 1000)
+    }
   }
 
   if (step === 'success' && order) {
