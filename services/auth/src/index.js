@@ -189,12 +189,90 @@ app.put(
   }
 )
 
+// ─── ADMIN: изменить роль пользователя ────────────────────────
+app.put('/admin/users/:userId/role', async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1]
+  if (!token) return res.status(401).json({ error: 'Нет токена' })
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET)
+    if (payload.role !== 'admin') return res.status(403).json({ error: 'Только для администраторов' })
+
+    const { role } = req.body
+    const allowed = ['user', 'manager', 'partner', 'admin']
+    if (!allowed.includes(role)) return res.status(400).json({ error: 'Недопустимая роль' })
+
+    const { rows } = await pool.query(
+      'UPDATE users SET role = $1, updated_at = NOW() WHERE id = $2 RETURNING id, name, email, role',
+      [role, req.params.userId]
+    )
+    if (!rows.length) return res.status(404).json({ error: 'Пользователь не найден' })
+    res.json(rows[0])
+  } catch {
+    res.status(401).json({ error: 'Недействительный токен' })
+  }
+})
+
+// ─── ADMIN: список всех пользователей ─────────────────────────
+app.get('/admin/users', async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1]
+  if (!token) return res.status(401).json({ error: 'Нет токена' })
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET)
+    if (payload.role !== 'admin') return res.status(403).json({ error: 'Только для администраторов' })
+
+    const { rows } = await pool.query(
+      'SELECT id, name, email, role, member_since FROM users ORDER BY member_since DESC'
+    )
+    res.json(rows)
+  } catch {
+    res.status(401).json({ error: 'Недействительный токен' })
+  }
+})
+
 // ─── HEALTH ──────────────────────────────────────────────────
 app.get('/health', (_, res) => res.json({ ok: true }))
 
+// ─── AUTO-SETUP: создаём первого администратора ───────────────
+// Запускается один раз при старте, если ADMIN_EMAIL задан в .env
+async function setupAdmin() {
+  const email = process.env.ADMIN_EMAIL
+  const password = process.env.ADMIN_PASSWORD
+  const name = process.env.ADMIN_NAME || 'Администратор'
+
+  if (!email || !password) return
+
+  try {
+    const exists = await pool.query('SELECT id, role FROM users WHERE email = $1', [email])
+
+    if (exists.rows.length) {
+      // пользователь есть — если роль не admin, повышаем
+      if (exists.rows[0].role !== 'admin') {
+        await pool.query('UPDATE users SET role = $1 WHERE email = $2', ['admin', email])
+        console.log(`✓ Admin promoted: ${email}`)
+      } else {
+        console.log(`✓ Admin exists: ${email}`)
+      }
+      return
+    }
+
+    // создаём нового администратора
+    const hash = await bcrypt.hash(password, 12)
+    await pool.query(
+      'INSERT INTO users (name, email, password_hash, role) VALUES ($1, $2, $3, $4)',
+      [name, email, hash, 'admin']
+    )
+    console.log(`✓ Admin created: ${email}`)
+  } catch (e) {
+    console.error('Admin setup error:', e.message)
+  }
+}
+
 pool.connect()
-  .then(() => {
+  .then(async () => {
     console.log('Auth service: DB connected')
+    await setupAdmin()
     app.listen(PORT, () => console.log(`Auth service on :${PORT}`))
   })
   .catch((e) => { console.error('DB connection failed', e); process.exit(1) })

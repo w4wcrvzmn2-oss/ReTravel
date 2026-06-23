@@ -6,7 +6,7 @@ import {
   Plus, Search, Edit, Trash2, Eye, BarChart2,
 } from 'lucide-react'
 import useAuthStore from '../../store/useAuthStore'
-import { tours as toursApi, orders as ordersApi } from '../../lib/api'
+import { tours as toursApi, admin as adminApi } from '../../lib/api'
 import { tours as staticTours } from '../../data/tours'
 
 // демо-данные пока API недоступен
@@ -276,44 +276,99 @@ function ToursTab({ tours, search, setSearch }) {
 
 // ─── USERS TAB ────────────────────────────────────────────────
 function UsersTab() {
-  const roleColor = { user: 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300', partner: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400', manager: 'bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400', admin: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' }
-  const roleName = { user: 'Клиент', partner: 'Партнёр', manager: 'Менеджер', admin: 'Админ' }
+  const [users, setUsers] = useState(DEMO_USERS)
+  const [saving, setSaving] = useState(null)
+  const currentUser = useAuthStore((s) => s.user)
+
+  useEffect(() => {
+    adminApi.users().then(setUsers).catch(() => {})
+  }, [])
+
+  const changeRole = async (userId, role) => {
+    setSaving(userId)
+    try {
+      const updated = await adminApi.setRole(userId, role)
+      setUsers((prev) => prev.map((u) => u.id === updated.id ? { ...u, role: updated.role } : u))
+    } catch {
+      // API недоступен — обновляем только UI
+      setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, role } : u))
+    } finally {
+      setSaving(null)
+    }
+  }
+
+  const roleColor = {
+    user:    'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300',
+    partner: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
+    manager: 'bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400',
+    admin:   'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
+  }
+  const ROLES = [
+    { value: 'user', label: 'Клиент' },
+    { value: 'manager', label: 'Менеджер' },
+    { value: 'partner', label: 'Партнёр' },
+    { value: 'admin', label: 'Админ' },
+  ]
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-black text-gray-900 dark:text-white">Пользователи</h1>
-        <span className="text-sm text-gray-400">{DEMO_USERS.length} записей</span>
+        <span className="text-sm text-gray-400">{users.length} записей</span>
       </div>
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 dark:bg-dark-800">
               <tr>
-                {['Имя', 'Email', 'Роль', 'Заказы', 'Регистрация', ''].map((h) => (
+                {['Имя', 'Email', 'Роль', 'Регистрация', 'Изменить роль'].map((h) => (
                   <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-dark-700">
-              {DEMO_USERS.map((u) => (
+              {users.map((u) => (
                 <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-violet-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
-                        {u.name[0]}
+                        {u.name?.[0] || '?'}
                       </div>
                       <span className="font-medium text-gray-900 dark:text-white">{u.name}</span>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{u.email}</td>
                   <td className="px-4 py-3">
-                    <span className={`badge ${roleColor[u.role]}`}>{roleName[u.role]}</span>
+                    <span className={`badge ${roleColor[u.role] || roleColor.user}`}>
+                      {ROLES.find((r) => r.value === u.role)?.label || u.role}
+                    </span>
                   </td>
-                  <td className="px-4 py-3 text-gray-900 dark:text-white">{u.orders}</td>
-                  <td className="px-4 py-3 text-gray-400 text-xs">{new Date(u.created_at).toLocaleDateString('ru-RU')}</td>
+                  <td className="px-4 py-3 text-gray-400 text-xs">
+                    {u.created_at || u.member_since
+                      ? new Date(u.created_at || u.member_since).toLocaleDateString('ru-RU')
+                      : '—'}
+                  </td>
                   <td className="px-4 py-3">
-                    <button className="p-1.5 text-gray-400 hover:text-primary-500 rounded-lg transition-colors"><Edit className="w-4 h-4" /></button>
+                    {/* нельзя менять роль себе самому */}
+                    {u.id !== currentUser?.id ? (
+                      <div className="relative">
+                        <select
+                          value={u.role}
+                          disabled={saving === u.id}
+                          onChange={(e) => changeRole(u.id, e.target.value)}
+                          className="input-field py-1.5 text-xs pr-7 appearance-none cursor-pointer disabled:opacity-50"
+                        >
+                          {ROLES.map((r) => (
+                            <option key={r.value} value={r.value}>{r.label}</option>
+                          ))}
+                        </select>
+                        {saving === u.id && (
+                          <span className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 border-2 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-xs text-gray-400 italic">это вы</span>
+                    )}
                   </td>
                 </tr>
               ))}

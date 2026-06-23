@@ -146,3 +146,10 @@ export const alerts = {
   subscribe: (email, tour_id) =>
     request('/notifications/alerts', { method: 'POST', body: JSON.stringify({ email, tour_id }) }),
 }
+
+// ─── ADMIN ────────────────────────────────────────────────────
+export const admin = {
+  users: () => request('/auth/admin/users'),
+  setRole: (userId, role) =>
+    request(`/auth/admin/users/${userId}/role`, { method: 'PUT', body: JSON.stringify({ role }) }),
+}
