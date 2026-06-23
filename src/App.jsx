@@ -4,6 +4,7 @@ import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
 import Toast from './components/ui/Toast'
 import ComparePanel from './components/ui/ComparePanel'
+import ProtectedRoute from './components/ui/ProtectedRoute'
 import Home from './pages/Home'
 import Search from './pages/Search'
 import Destinations from './pages/Destinations'
@@ -16,19 +17,20 @@ import About from './pages/About'
 import Flights from './pages/Flights'
 import Hotels from './pages/Hotels'
 import Compare from './pages/Compare'
+import AdminPanel from './pages/admin/AdminPanel'
+import CRMPanel from './pages/crm/CRMPanel'
+import PartnerPanel from './pages/partner/PartnerPanel'
 import useThemeStore from './store/useThemeStore'
 import useAuthStore from './store/useAuthStore'
 
+// панели используют свои sidebar'ы — скрываем глобальный header/footer
+const PANEL_PREFIXES = ['/admin', '/crm', '/partner']
+
 function ScrollToTop() {
   const { pathname } = useLocation()
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [pathname])
+  useEffect(() => { window.scrollTo(0, 0) }, [pathname])
   return null
 }
-
-const NO_FOOTER = ['/auth']
-const NO_HEADER = []
 
 export default function App() {
   const { isDark, hydrate } = useThemeStore()
@@ -40,28 +42,44 @@ export default function App() {
     initAuth()
   }, [])
 
-  const showFooter = !NO_FOOTER.includes(pathname)
-  const showHeader = !NO_HEADER.includes(pathname)
+  const isPanel = PANEL_PREFIXES.some((p) => pathname.startsWith(p))
+  const isAuth = pathname === '/auth'
 
   return (
     <div className="flex flex-col min-h-screen">
       <ScrollToTop />
-      {showHeader && <Header />}
+      {!isPanel && <Header />}
 
       <main className="flex-1">
         <Routes>
+          {/* ─── публичные ─── */}
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Search />} />
           <Route path="/destinations" element={<Destinations />} />
           <Route path="/destination/:id" element={<DestinationDetail />} />
           <Route path="/tour/:id" element={<TourDetail />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/cabinet" element={<Cabinet />} />
-          <Route path="/cart" element={<Cart />} />
           <Route path="/about" element={<About />} />
           <Route path="/flights" element={<Flights />} />
           <Route path="/hotels" element={<Hotels />} />
           <Route path="/compare" element={<Compare />} />
+
+          {/* ─── авторизованные ─── */}
+          <Route path="/cabinet" element={
+            <ProtectedRoute><Cabinet /></ProtectedRoute>
+          } />
+          <Route path="/cart" element={<Cart />} />
+
+          {/* ─── панели (только sidebar, без глобального header/footer) ─── */}
+          <Route path="/admin/*" element={
+            <ProtectedRoute role="admin"><AdminPanel /></ProtectedRoute>
+          } />
+          <Route path="/crm/*" element={
+            <ProtectedRoute role="manager"><CRMPanel /></ProtectedRoute>
+          } />
+          <Route path="/partner/*" element={
+            <ProtectedRoute role="partner"><PartnerPanel /></ProtectedRoute>
+          } />
 
           <Route
             path="*"
@@ -78,7 +96,7 @@ export default function App() {
         </Routes>
       </main>
 
-      {showFooter && <Footer />}
+      {!isPanel && !isAuth && <Footer />}
 
       {/* глобальные оверлеи */}
       <Toast />
