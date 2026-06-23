@@ -1,0 +1,293 @@
+import { useState, useEffect, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { SlidersHorizontal, X, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
+import TourCard from '../components/ui/TourCard'
+import SearchBar from '../components/ui/SearchBar'
+import { tours } from '../data/tours'
+import { destinations } from '../data/destinations'
+
+const CATEGORIES = [
+  { id: 'beach', label: 'Пляж' },
+  { id: 'excursion', label: 'Экскурсии' },
+  { id: 'adventure', label: 'Приключения' },
+  { id: 'romantic', label: 'Романтика' },
+  { id: 'luxury', label: 'Люкс' },
+  { id: 'city', label: 'Города' },
+]
+
+const MEALS = [
+  { id: 'All Inclusive', label: 'Всё включено' },
+  { id: 'Полупансион', label: 'Полупансион' },
+  { id: 'Завтрак', label: 'Завтрак' },
+]
+
+const SORT_OPTIONS = [
+  { id: 'price_asc', label: 'Сначала дешевле' },
+  { id: 'price_desc', label: 'Сначала дороже' },
+  { id: 'rating', label: 'По рейтингу' },
+  { id: 'duration', label: 'По длительности' },
+]
+
+const PER_PAGE = 6
+
+export default function Search() {
+  const [searchParams] = useSearchParams()
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [page, setPage] = useState(1)
+
+  const [filters, setFilters] = useState({
+    destination: searchParams.get('destination') || '',
+    categories: searchParams.get('category') ? [searchParams.get('category')] : [],
+    meals: [],
+    stars: [],
+    priceMax: 250000,
+    sort: 'rating',
+    isHot: searchParams.get('isHot') === 'true',
+  })
+
+  useEffect(() => {
+    document.title = 'Поиск туров — ReTravel'
+    const dest = searchParams.get('destination')
+    if (dest) setFilters((f) => ({ ...f, destination: dest }))
+  }, [])
+
+  // при смене фильтров сбрасываем на первую страницу
+  useEffect(() => { setPage(1) }, [filters])
+
+  const setFilter = (key, val) => setFilters((f) => ({ ...f, [key]: val }))
+
+  const toggleArr = (key, val) =>
+    setFilters((f) => ({
+      ...f,
+      [key]: f[key].includes(val) ? f[key].filter((v) => v !== val) : [...f[key], val],
+    }))
+
+  const filtered = useMemo(() => {
+    let result = [...tours]
+    if (filters.destination) result = result.filter((t) => t.destination === filters.destination)
+    if (filters.isHot) result = result.filter((t) => t.isHot)
+    if (filters.categories.length) result = result.filter((t) => filters.categories.includes(t.category))
+    if (filters.meals.length) result = result.filter((t) => filters.meals.includes(t.mealType))
+    if (filters.stars.length) result = result.filter((t) => filters.stars.includes(t.hotelStars))
+    result = result.filter((t) => t.price <= filters.priceMax)
+    if (filters.sort === 'price_asc') result.sort((a, b) => a.price - b.price)
+    else if (filters.sort === 'price_desc') result.sort((a, b) => b.price - a.price)
+    else if (filters.sort === 'rating') result.sort((a, b) => b.rating - a.rating)
+    else if (filters.sort === 'duration') result.sort((a, b) => b.nights - a.nights)
+    return result
+  }, [filters])
+
+  const totalPages = Math.ceil(filtered.length / PER_PAGE)
+  const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE)
+
+  const activeDestination = destinations.find((d) => d.id === filters.destination)
+
+  const resetFilters = () => {
+    setFilters({ destination: '', categories: [], meals: [], stars: [], priceMax: 250000, sort: 'rating', isHot: false })
+    setPage(1)
+  }
+
+  const hasActiveFilters = filters.categories.length || filters.meals.length || filters.stars.length || filters.priceMax < 250000 || filters.isHot
+
+  return (
+    <div className="pt-20 min-h-screen">
+      {/* шапка поиска */}
+      <div className="bg-dark-900 py-8">
+        <div className="page-container">
+          <h1 className="text-2xl font-bold text-white mb-5">
+            {activeDestination ? `Туры в ${activeDestination.name}` : 'Все туры'}
+          </h1>
+          <SearchBar compact initialValues={{ destination: filters.destination }} />
+        </div>
+      </div>
+
+      <div className="page-container py-8">
+        <div className="flex gap-8">
+          {/* фильтры */}
+          <aside className="shrink-0 w-64 hidden lg:block">
+            <FilterPanel filters={filters} setFilter={setFilter} toggleArr={toggleArr} hasActive={hasActiveFilters} onReset={resetFilters} />
+          </aside>
+
+          {/* основной контент */}
+          <div className="flex-1 min-w-0">
+            {/* тулбар */}
+            <div className="flex items-center justify-between gap-4 mb-6">
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
+                Найдено <span className="font-semibold text-gray-900 dark:text-white">{filtered.length}</span> туров
+              </p>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setFiltersOpen(true)}
+                  className="lg:hidden btn-outline py-2 px-4 text-sm"
+                >
+                  <SlidersHorizontal className="w-4 h-4" />
+                  Фильтры
+                  {hasActiveFilters && (
+                    <span className="w-4 h-4 bg-accent-500 text-white text-[10px] rounded-full flex items-center justify-center">!</span>
+                  )}
+                </button>
+                <div className="relative">
+                  <select
+                    value={filters.sort}
+                    onChange={(e) => setFilter('sort', e.target.value)}
+                    className="input-field py-2 pr-8 text-sm appearance-none cursor-pointer"
+                  >
+                    {SORT_OPTIONS.map((o) => (
+                      <option key={o.id} value={o.id}>{o.label}</option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                </div>
+              </div>
+            </div>
+
+            {/* результаты */}
+            {paginated.length === 0 ? (
+              <div className="card p-12 text-center">
+                <div className="text-5xl mb-4">😞</div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Туры не найдены</h3>
+                <p className="text-gray-500 dark:text-gray-400 mb-6">Попробуйте изменить фильтры</p>
+                <button onClick={resetFilters} className="btn-outline">Сбросить фильтры</button>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                  {paginated.map((tour) => (
+                    <TourCard key={tour.id} tour={tour} />
+                  ))}
+                </div>
+
+                {/* пагинация */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 mt-8">
+                    <button
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      disabled={page === 1}
+                      className="p-2 rounded-lg border border-gray-200 dark:border-dark-600 disabled:opacity-40 hover:border-primary-400 transition-colors"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+                      <button
+                        key={n}
+                        onClick={() => setPage(n)}
+                        className={[
+                          'w-9 h-9 rounded-lg text-sm font-medium transition-colors',
+                          n === page
+                            ? 'bg-primary-500 text-white'
+                            : 'border border-gray-200 dark:border-dark-600 text-gray-700 dark:text-gray-300 hover:border-primary-400',
+                        ].join(' ')}
+                      >
+                        {n}
+                      </button>
+                    ))}
+
+                    <button
+                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={page === totalPages}
+                      className="p-2 rounded-lg border border-gray-200 dark:border-dark-600 disabled:opacity-40 hover:border-primary-400 transition-colors"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* мобильный фильтр-дровер */}
+      {filtersOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setFiltersOpen(false)} />
+          <div className="absolute right-0 top-0 bottom-0 w-80 bg-white dark:bg-dark-800 overflow-y-auto p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="font-bold text-gray-900 dark:text-white text-lg">Фильтры</h3>
+              <button onClick={() => setFiltersOpen(false)}><X className="w-5 h-5" /></button>
+            </div>
+            <FilterPanel filters={filters} setFilter={setFilter} toggleArr={toggleArr} hasActive={hasActiveFilters} onReset={resetFilters} />
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function FilterPanel({ filters, setFilter, toggleArr, hasActive, onReset }) {
+  return (
+    <div className="space-y-6">
+      {hasActive && (
+        <button onClick={onReset} className="flex items-center gap-1.5 text-sm text-red-500 hover:text-red-600 font-medium">
+          <X className="w-4 h-4" /> Сбросить все
+        </button>
+      )}
+      <FilterSection title="Тип предложения">
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" checked={filters.isHot} onChange={(e) => setFilter('isHot', e.target.checked)} className="w-4 h-4 rounded text-primary-500" />
+          <span className="text-sm text-gray-700 dark:text-gray-300">🔥 Только горящие</span>
+        </label>
+      </FilterSection>
+      <FilterSection title="Вид отдыха">
+        <div className="space-y-2">
+          {CATEGORIES.map((c) => (
+            <label key={c.id} className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={filters.categories.includes(c.id)} onChange={() => toggleArr('categories', c.id)} className="w-4 h-4 rounded text-primary-500" />
+              <span className="text-sm text-gray-700 dark:text-gray-300">{c.label}</span>
+            </label>
+          ))}
+        </div>
+      </FilterSection>
+      <FilterSection title="Питание">
+        <div className="space-y-2">
+          {MEALS.map((m) => (
+            <label key={m.id} className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={filters.meals.includes(m.id)} onChange={() => toggleArr('meals', m.id)} className="w-4 h-4 rounded text-primary-500" />
+              <span className="text-sm text-gray-700 dark:text-gray-300">{m.label}</span>
+            </label>
+          ))}
+        </div>
+      </FilterSection>
+      <FilterSection title="Звёзды отеля">
+        <div className="flex flex-wrap gap-2">
+          {[3, 4, 5].map((s) => (
+            <button
+              key={s}
+              onClick={() => toggleArr('stars', s)}
+              className={[
+                'px-3 py-1.5 rounded-lg text-sm font-medium border-2 transition-colors',
+                filters.stars.includes(s)
+                  ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-600'
+                  : 'border-gray-200 dark:border-dark-600 text-gray-600 dark:text-gray-300 hover:border-gray-300',
+              ].join(' ')}
+            >
+              {'★'.repeat(s)}
+            </button>
+          ))}
+        </div>
+      </FilterSection>
+      <FilterSection title={`До ${filters.priceMax.toLocaleString('ru-RU')} ₽`}>
+        <input
+          type="range" min={30000} max={250000} step={5000}
+          value={filters.priceMax}
+          onChange={(e) => setFilter('priceMax', +e.target.value)}
+          className="w-full accent-primary-500"
+        />
+        <div className="flex justify-between text-xs text-gray-400 mt-1">
+          <span>30 000 ₽</span>
+          <span>250 000 ₽</span>
+        </div>
+      </FilterSection>
+    </div>
+  )
+}
+
+function FilterSection({ title, children }) {
+  return (
+    <div>
+      <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 uppercase tracking-wide">{title}</h4>
+      {children}
+    </div>
+  )
+}
