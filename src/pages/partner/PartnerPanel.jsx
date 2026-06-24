@@ -286,7 +286,7 @@ function SavingsRoadmap({ tours, totalBookings }) {
       </div>
 
       {/* Визуальная шкала уровней */}
-      <div className="flex items-center gap-0 mb-7 overflow-x-auto pb-1">
+      <div className="flex items-center gap-0 mb-7 overflow-x-auto pt-5 pb-1">
         {steps.map((step, i) => {
           const colors = TIER_STEP_COLORS[step.color] || TIER_STEP_COLORS.blue
           const isDone    = i < currentIdx
