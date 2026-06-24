@@ -64,7 +64,9 @@ export default function Header() {
 
   const headerClass = [
     'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-    isHome && !scrolled ? 'bg-transparent' : 'glass shadow-sm',
+    isHome && !scrolled
+      ? 'bg-transparent'
+      : 'glass shadow-[0_1px_0_rgba(60,40,20,.08)] dark:shadow-[0_1px_0_rgba(255,255,255,.06)]',
   ].join(' ')
 
   const handleLogout = () => { logout(); navigate('/') }
@@ -75,10 +77,10 @@ export default function Header() {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* лого */}
           <Link to="/" className="flex items-center gap-2 group shrink-0">
-            <div className="w-9 h-9 bg-primary-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <div className="w-9 h-9 bg-primary-500 rounded-[11px] flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_2px_8px_rgba(232,93,61,.35)]">
               <Plane className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-black text-gray-900 dark:text-white">
+            <span className="font-display font-black text-xl text-ink dark:text-sand-50">
               Re<span className="text-primary-500">Travel</span>
             </span>
           </Link>
@@ -90,13 +92,16 @@ export default function Header() {
                 key={l.to}
                 to={l.to}
                 className={[
-                  'px-3 py-2 rounded-lg font-medium transition-colors text-sm',
+                  'relative px-3 py-2 font-semibold transition-colors text-sm font-sans',
                   location.pathname === l.to
-                    ? 'text-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-700',
+                    ? 'text-primary-500'
+                    : 'text-sand-600 dark:text-sand-400 hover:text-ink dark:hover:text-sand-50',
                 ].join(' ')}
               >
                 {l.label}
+                {location.pathname === l.to && (
+                  <span className="absolute bottom-0 left-3 right-3 h-[3px] bg-primary-500 rounded-full" />
+                )}
               </Link>
             ))}
           </nav>
@@ -167,7 +172,7 @@ export default function Header() {
                 </button>
               </div>
             ) : (
-              <Link to="/auth" className="hidden md:flex btn-primary py-2 px-4 text-sm">Войти</Link>
+              <Link to="/auth" className="hidden md:flex btn-primary py-2 px-5 text-sm rounded-full">Войти</Link>
             )}
 
             <button
