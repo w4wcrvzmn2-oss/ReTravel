@@ -4,6 +4,7 @@ import {
   Package, BarChart2, Plus, Eye, Edit, Trash2,
   TrendingUp, Star, DollarSign, LogOut, Upload,
   CheckCircle, Clock, AlertCircle, ChevronRight,
+  MapPin, Zap, ArrowRight,
 } from 'lucide-react'
 import useAuthStore from '../../store/useAuthStore'
 import useCommissionStore from '../../store/useCommissionStore'
@@ -181,6 +182,9 @@ function PartnerDashboard({ tours, totalRevenue, totalBookings }) {
         })}
       </div>
 
+      {/* ── Дорожная карта экономии ── */}
+      <SavingsRoadmap tours={tours} totalBookings={totalBookings} />
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="card p-6">
           <h2 className="font-bold text-gray-900 dark:text-white mb-4">Топ туры по выручке</h2>
@@ -234,6 +238,189 @@ function PartnerDashboard({ tours, totalRevenue, totalBookings }) {
           )}
         </div>
       </div>
+    </div>
+  )
+}
+
+// ─── SAVINGS ROADMAP ─────────────────────────────────────────
+const TIER_STEP_COLORS = {
+  blue:   { active: 'bg-blue-500 text-white',   done: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',   idle: 'bg-gray-100 text-gray-400 dark:bg-dark-700 dark:text-gray-500' },
+  green:  { active: 'bg-green-500 text-white',  done: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400', idle: 'bg-gray-100 text-gray-400 dark:bg-dark-700 dark:text-gray-500' },
+  violet: { active: 'bg-violet-500 text-white', done: 'bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400', idle: 'bg-gray-100 text-gray-400 dark:bg-dark-700 dark:text-gray-500' },
+  amber:  { active: 'bg-amber-500 text-white',  done: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400', idle: 'bg-gray-100 text-gray-400 dark:bg-dark-700 dark:text-gray-500' },
+  rose:   { active: 'bg-rose-500 text-white',   done: 'bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400',   idle: 'bg-gray-100 text-gray-400 dark:bg-dark-700 dark:text-gray-500' },
+}
+
+function SavingsRoadmap({ tours, totalBookings }) {
+  const { tiers, getEffective, getNextTier } = useCommissionStore()
+
+  const { rate, tier } = getEffective(totalBookings)
+  const nextTier = getNextTier(totalBookings)
+
+  // Средняя цена тура из реальных данных
+  const totalRevenue = tours.reduce((s, t) => s + t.revenue, 0)
+  const totalTourBookings = tours.reduce((s, t) => s + t.bookings, 0)
+  const avgPrice = totalTourBookings > 0 ? Math.round(totalRevenue / totalTourBookings) : 70000
+
+  // Только обычные (не manual) тиры, по порядку
+  const steps = [...tiers].filter((t) => !t.manual).sort((a, b) => a.bookingsMin - b.bookingsMin)
+  const currentIdx = steps.findIndex((t) => t.id === tier.id)
+
+  // Расчёт экономии до следующего тира
+  const toNext = nextTier ? nextTier.bookingsMin - totalBookings : 0
+  const savingPerBooking = nextTier ? Math.round(avgPrice * (rate - nextTier.rate) / 100) : 0
+
+  const SCENARIOS = [10, 20, 30, 50]
+
+  return (
+    <div className="card p-6 mb-6">
+      {/* Заголовок */}
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-10 h-10 rounded-2xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
+          <MapPin className="w-5 h-5 text-primary-500" />
+        </div>
+        <div>
+          <h2 className="font-display font-bold text-lg text-ink dark:text-sand-50">Дорожная карта экономии</h2>
+          <p className="text-xs text-sand-500 dark:text-sand-400 font-mono">Сколько вы сэкономите, добравшись до следующего уровня</p>
+        </div>
+      </div>
+
+      {/* Визуальная шкала уровней */}
+      <div className="flex items-center gap-0 mb-7 overflow-x-auto pb-1">
+        {steps.map((step, i) => {
+          const colors = TIER_STEP_COLORS[step.color] || TIER_STEP_COLORS.blue
+          const isDone    = i < currentIdx
+          const isCurrent = i === currentIdx
+          const isNext    = i === currentIdx + 1
+          const cls = isCurrent ? colors.active : isDone ? colors.done : colors.idle
+
+          return (
+            <div key={step.id} className="flex items-center min-w-0">
+              {/* Шаг */}
+              <div className={`relative flex flex-col items-center px-4 py-2.5 rounded-2xl ${cls} transition-all shrink-0`}>
+                {isCurrent && (
+                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[9px] font-mono font-bold text-primary-500 whitespace-nowrap bg-white dark:bg-dark-800 px-1.5 rounded-full border border-primary-200 dark:border-primary-800">
+                    ВЫ ЗДЕСЬ
+                  </span>
+                )}
+                {isNext && nextTier && (
+                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[9px] font-mono font-bold text-amber-500 whitespace-nowrap bg-white dark:bg-dark-800 px-1.5 rounded-full border border-amber-200 dark:border-amber-800">
+                    {toNext} броней
+                  </span>
+                )}
+                <span className="font-mono font-bold text-[11px] leading-none mb-0.5">{step.label}</span>
+                <span className="font-display font-black text-[18px] leading-none">{step.rate}%</span>
+                <span className="font-mono text-[9px] leading-none mt-0.5 opacity-75">
+                  {step.bookingsMin}–{step.bookingsMax >= 9999 ? '∞' : step.bookingsMax}
+                </span>
+              </div>
+
+              {/* Коннектор */}
+              {i < steps.length - 1 && (
+                <div className="flex-1 h-0.5 min-w-[16px] max-w-[40px] bg-gray-200 dark:bg-dark-700 mx-1" />
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {!nextTier ? (
+        /* Максимальный уровень */
+        <div className="bg-green-50 dark:bg-green-900/20 rounded-2xl p-4 text-center">
+          <span className="text-2xl">🏆</span>
+          <p className="font-display font-bold text-green-700 dark:text-green-400 mt-2">Вы на максимальном уровне!</p>
+          <p className="text-sm text-green-600 dark:text-green-500 mt-1">Наслаждайтесь минимальной комиссией {rate}%</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {/* Левая: расчёт экономии */}
+          <div className="bg-primary-50 dark:bg-primary-900/20 rounded-2xl p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <Zap className="w-4 h-4 text-primary-500" />
+              <span className="font-mono text-[11px] font-bold text-primary-500 tracking-widest uppercase">Следующий уровень</span>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-sand-600 dark:text-sand-400">Средняя цена тура</span>
+                <span className="font-display font-bold text-ink dark:text-sand-50">
+                  {avgPrice.toLocaleString('ru')} ₽
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-sand-600 dark:text-sand-400">Текущая ставка</span>
+                <span className="font-mono font-bold text-ink dark:text-sand-50">{rate}%</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-sand-600 dark:text-sand-400">Ставка «{nextTier.label}»</span>
+                <span className="font-mono font-bold text-green-600 dark:text-green-400">{nextTier.rate}%</span>
+              </div>
+              <div className="h-px bg-primary-200 dark:bg-primary-800" />
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-ink dark:text-sand-100">Экономия с 1 брони</span>
+                <div className="text-right">
+                  <span className="font-display font-black text-xl text-primary-500">
+                    {savingPerBooking.toLocaleString('ru')} ₽
+                  </span>
+                  <span className="font-mono text-[10px] text-sand-400 ml-1">({rate}%→{nextTier.rate}%)</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-primary-200 dark:border-primary-800">
+              <p className="text-xs text-primary-600 dark:text-primary-300 font-medium">
+                До уровня «{nextTier.label}» осталось <strong className="font-mono">{toNext}</strong> броней
+              </p>
+            </div>
+          </div>
+
+          {/* Правая: таблица проекций */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <ArrowRight className="w-4 h-4 text-primary-500" />
+              <span className="font-mono text-[11px] font-bold text-sand-500 tracking-widest uppercase">
+                Ваша экономия при «{nextTier.label}»
+              </span>
+            </div>
+
+            <div className="space-y-2">
+              {SCENARIOS.map((n, i) => {
+                const monthly = n * savingPerBooking
+                const annual  = monthly * 12
+                const isHighlighted = i === 1
+                return (
+                  <div
+                    key={n}
+                    className={[
+                      'flex items-center justify-between rounded-xl px-4 py-3',
+                      isHighlighted
+                        ? 'bg-primary-500 text-white'
+                        : 'bg-sand-100 dark:bg-dark-800',
+                    ].join(' ')}
+                  >
+                    <span className={`font-mono text-sm font-bold ${isHighlighted ? 'text-white/80' : 'text-sand-500 dark:text-sand-400'}`}>
+                      {n} броней/мес
+                    </span>
+                    <div className="text-right">
+                      <span className={`font-display font-black text-[15px] ${isHighlighted ? 'text-white' : 'text-ink dark:text-sand-50'}`}>
+                        {monthly.toLocaleString('ru')} ₽
+                      </span>
+                      <span className={`font-mono text-[10px] ml-2 ${isHighlighted ? 'text-white/70' : 'text-sand-400'}`}>
+                        → {annual >= 1_000_000
+                          ? (annual / 1_000_000).toFixed(1) + ' млн/год'
+                          : Math.round(annual / 1000) + 'к/год'}
+                      </span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            <p className="text-[10px] font-mono text-sand-400 mt-2 text-right">
+              * разница между текущей и следующей ставкой × цена тура
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

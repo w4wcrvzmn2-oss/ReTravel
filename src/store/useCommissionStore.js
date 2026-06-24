@@ -2,10 +2,11 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 const DEFAULT_TIERS = [
-  { id: 'new',       label: 'Новый',        rate: 6,  bookingsMin: 0,   bookingsMax: 4,    color: 'blue'   },
-  { id: 'standard',  label: 'Стандарт',     rate: 10, bookingsMin: 5,   bookingsMax: 19,   color: 'green'  },
-  { id: 'top',       label: 'Топ-партнёр',  rate: 8,  bookingsMin: 20,  bookingsMax: 9999, color: 'violet' },
-  { id: 'exclusive', label: 'Эксклюзив',    rate: 12, bookingsMin: null, bookingsMax: null, color: 'amber', manual: true },
+  { id: 'new',       label: 'Новый',       rate: 12, bookingsMin: 0,   bookingsMax: 4,    color: 'blue'   },
+  { id: 'standard',  label: 'Стандарт',    rate: 10, bookingsMin: 5,   bookingsMax: 19,   color: 'green'  },
+  { id: 'top',       label: 'Топ-партнёр', rate: 8,  bookingsMin: 20,  bookingsMax: 49,   color: 'violet' },
+  { id: 'pro',       label: 'Про',         rate: 6,  bookingsMin: 50,  bookingsMax: 9999, color: 'amber'  },
+  { id: 'exclusive', label: 'Эксклюзив',   rate: 4,  bookingsMin: null, bookingsMax: null, color: 'rose', manual: true },
 ]
 
 const DEFAULT_PROMOS = [
