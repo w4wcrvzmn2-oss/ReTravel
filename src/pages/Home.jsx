@@ -51,30 +51,88 @@ export default function Home() {
   return (
     <div>
       {/* ══════════════════════ HERO ══════════════════════ */}
-      <section className="relative overflow-hidden bg-sand-50 dark:bg-dark-950 pt-20">
-        <div className="page-container">
+      <section className="relative overflow-hidden bg-sand-50 dark:bg-dark-950 pt-16 md:pt-20">
+
+        {/* ── MOBILE HERO ── */}
+        <div className="md:hidden">
+          {/* Hero image with gradient overlay */}
+          <div className="relative h-[52vw] min-h-[200px] max-h-[280px] overflow-hidden">
+            <img
+              src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80"
+              alt="Путешествие"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-sand-50/10 via-transparent to-sand-50 dark:from-dark-950/10 dark:to-dark-950" />
+            {/* Coral badge */}
+            <div className="absolute top-3 right-3 bg-primary-500 text-white rounded-[14px] px-3 py-2 shadow-[0_4px_14px_rgba(232,93,61,.45)]">
+              <p className="font-mono text-[8px] font-bold tracking-widest opacity-80 leading-none mb-0.5">ПУТЕШЕСТВЕННИКОВ</p>
+              <p className="font-display font-black text-lg leading-none">50 000+</p>
+            </div>
+          </div>
+
+          <div className="px-4 pt-2 pb-6">
+            <span className="kicker mb-3 block text-[10px]">RETRAVEL · ПОИСК ТУРОВ · 2026</span>
+            <h1 className="font-display font-black text-[38px] leading-[0.95] tracking-[-0.025em] text-ink dark:text-sand-50 mb-3">
+              Путешествие<br />
+              начинается с{' '}
+              <span className="text-primary-500">горизонта</span>
+            </h1>
+            <p className="font-sans text-[14px] leading-[1.6] text-sand-600 dark:text-sand-400 mb-5">
+              Сравниваем туры от 200+ операторов — лучшая цена без лишних усилий.
+            </p>
+
+            {/* Search */}
+            <div className="bg-white dark:bg-dark-800 rounded-[18px] shadow-warm-lg p-1.5 mb-4 border border-sand-200 dark:border-dark-700">
+              <SearchBar />
+            </div>
+
+            {/* Quick tags — horizontal scroll */}
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin -mx-4 px-4">
+              {quickTags.map((t) => (
+                <Link
+                  key={t.id}
+                  to={`/search?destination=${t.id}`}
+                  className="flex-shrink-0 px-3 py-1.5 bg-sand-100 dark:bg-dark-800 hover:bg-primary-50 dark:hover:bg-primary-900/20 text-sand-700 dark:text-sand-400 text-sm rounded-full border border-sand-200 dark:border-dark-700 transition-colors font-medium"
+                >
+                  {t.label}
+                </Link>
+              ))}
+            </div>
+
+            {/* Quick stats row */}
+            <div className="grid grid-cols-3 gap-3 mt-5">
+              {[
+                { v: '50k+', l: 'Туристов' },
+                { v: '3000+', l: 'Туров' },
+                { v: '4.9★', l: 'Рейтинг' },
+              ].map((s) => (
+                <div key={s.l} className="bg-sand-100 dark:bg-dark-800 rounded-[14px] px-3 py-2.5 text-center">
+                  <p className="font-display font-black text-[18px] text-ink dark:text-sand-50 leading-none">{s.v}</p>
+                  <p className="font-mono text-[9px] font-bold text-sand-500 tracking-wide mt-0.5">{s.l.toUpperCase()}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── DESKTOP HERO ── */}
+        <div className="hidden md:block page-container">
           <div className="flex flex-col lg:flex-row items-center gap-12 min-h-[88vh] py-16">
 
-            {/* ── Left: content ── */}
+            {/* Left: content */}
             <div className="flex-1 max-w-[560px] relative z-10">
               <span className="kicker mb-5 block">RETRAVEL · ПОИСК ТУРОВ · 2026</span>
-
               <h1 className="font-display font-black text-[52px] md:text-[68px] leading-[0.95] tracking-[-0.025em] text-ink dark:text-sand-50 mb-6">
                 Путешествие<br />
                 начинается с{' '}
                 <span className="text-primary-500">горизонта</span>
               </h1>
-
               <p className="font-sans text-[17px] leading-[1.6] text-sand-700 dark:text-sand-400 mb-8 max-w-md">
                 Сравниваем туры и билеты от 200+ туроператоров, чтобы вы нашли лучшую цену без лишних усилий.
               </p>
-
-              {/* Search */}
               <div className="bg-white dark:bg-dark-800 rounded-[22px] shadow-warm-lg p-2 mb-5 border border-sand-200 dark:border-dark-700">
                 <SearchBar />
               </div>
-
-              {/* Quick tags */}
               <div className="flex flex-wrap gap-2">
                 {quickTags.map((t) => (
                   <Link
@@ -88,10 +146,9 @@ export default function Home() {
               </div>
             </div>
 
-            {/* ── Right: image + floating badges ── */}
+            {/* Right: image + floating badges */}
             <div className="flex-1 relative hidden lg:flex items-center justify-center">
               <div className="relative w-full max-w-[520px]">
-                {/* Main hero image */}
                 <div className="rounded-[28px] overflow-hidden aspect-[4/4.2] shadow-warm-xl">
                   <img
                     src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=900&q=80"
@@ -100,8 +157,6 @@ export default function Home() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-[28px]" />
                 </div>
-
-                {/* Floating: rating */}
                 <div className="absolute -bottom-6 -left-10 bg-white dark:bg-dark-800 rounded-2xl px-4 py-3 shadow-float animate-float border border-sand-100 dark:border-dark-700">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-yellow-50 dark:bg-yellow-900/20 flex items-center justify-center text-lg">⭐</div>
@@ -111,16 +166,10 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-
-                {/* Floating: travelers */}
-                <div
-                  className="absolute -top-5 -right-6 bg-primary-500 text-white rounded-2xl px-4 py-3 shadow-[0_8px_22px_rgba(232,93,61,.4)] animate-float-slow"
-                >
+                <div className="absolute -top-5 -right-6 bg-primary-500 text-white rounded-2xl px-4 py-3 shadow-[0_8px_22px_rgba(232,93,61,.4)] animate-float-slow">
                   <p className="font-mono text-[10px] font-bold tracking-widest opacity-80">ПУТЕШЕСТВЕННИКОВ</p>
                   <p className="font-display font-black text-2xl">50 000+</p>
                 </div>
-
-                {/* Floating: hot deals */}
                 <div
                   className="absolute top-1/2 -left-12 -translate-y-1/2 bg-white dark:bg-dark-800 rounded-2xl px-3 py-2.5 shadow-float animate-float border border-sand-100 dark:border-dark-700"
                   style={{ animationDelay: '2.5s' }}
@@ -138,9 +187,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Декоративный кружок */}
-        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-primary-500/5 dark:bg-primary-500/10 pointer-events-none" />
-        <div className="absolute -bottom-20 -left-20 w-[400px] h-[400px] rounded-full bg-sand-200/60 dark:bg-dark-800/60 pointer-events-none" />
+        {/* Декоративный кружок (desktop only) */}
+        <div className="hidden md:block absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-primary-500/5 dark:bg-primary-500/10 pointer-events-none" />
+        <div className="hidden md:block absolute -bottom-20 -left-20 w-[400px] h-[400px] rounded-full bg-sand-200/60 dark:bg-dark-800/60 pointer-events-none" />
       </section>
 
       {/* ══════════════════════ СТАТИСТИКА ══════════════════════ */}
@@ -225,7 +274,16 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Mobile: горизонтальный скролл */}
+          <div className="md:hidden flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-thin">
+            {featuredTours.map((tour) => (
+              <div key={tour.id} className="flex-shrink-0 w-[75vw] max-w-[300px]">
+                <TourCard tour={tour} />
+              </div>
+            ))}
+          </div>
+          {/* Desktop: сетка */}
+          <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredTours.map((tour) => (
               <TourCard key={tour.id} tour={tour} />
             ))}

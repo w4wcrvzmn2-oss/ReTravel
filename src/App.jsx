@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
+import MobileBottomNav from './components/layout/MobileBottomNav'
 import Toast from './components/ui/Toast'
 import ComparePanel from './components/ui/ComparePanel'
 import ProtectedRoute from './components/ui/ProtectedRoute'
@@ -50,7 +51,7 @@ export default function App() {
       <ScrollToTop />
       {!isPanel && <Header />}
 
-      <main className="flex-1">
+      <main className="flex-1 pb-[72px] md:pb-0">
         <Routes>
           {/* ─── публичные ─── */}
           <Route path="/" element={<Home />} />
@@ -97,6 +98,9 @@ export default function App() {
       </main>
 
       {!isPanel && !isAuth && <Footer />}
+
+      {/* Мобильная навигация (скрыта на десктопе и в панелях) */}
+      {!isPanel && !isAuth && <MobileBottomNav />}
 
       {/* глобальные оверлеи */}
       <Toast />

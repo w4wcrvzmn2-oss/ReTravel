@@ -119,6 +119,10 @@
 }
 
 @layer utilities {
+  /* Safe-area padding for iOS bottom nav */
+  .pb-safe  { padding-bottom: env(safe-area-inset-bottom); }
+  .mb-nav   { margin-bottom: 72px; }
+
   .text-gradient {
     @apply bg-gradient-to-r from-primary-500 to-primary-700 bg-clip-text text-transparent;
   }

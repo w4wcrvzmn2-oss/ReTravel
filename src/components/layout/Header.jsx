@@ -175,12 +175,15 @@ export default function Header() {
               <Link to="/auth" className="hidden md:flex btn-primary py-2 px-5 text-sm rounded-full">Войти</Link>
             )}
 
-            <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden btn-ghost p-2 rounded-xl"
-            >
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
+            {/* На мобиле навигация через BottomNav — бургер не нужен */}
+            {user && (
+              <button
+                onClick={() => setMobileOpen(!mobileOpen)}
+                className="md:hidden btn-ghost p-2 rounded-xl"
+              >
+                {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+            )}
           </div>
         </div>
       </div>
