@@ -22,20 +22,25 @@ const howItWorks = [
 ]
 
 const quickTags = [
+  { label: '🇷🇺 Россия',   id: 'russia'   },
+  { label: '⛰️ Кавказ',   id: 'caucasus' },
   { label: '🇹🇷 Турция',  id: 'turkey'   },
   { label: '🇪🇬 Египет',   id: 'egypt'    },
   { label: '🇦🇪 Дубай',    id: 'dubai'    },
+  { label: '🇬🇪 Грузия',   id: 'georgia'  },
   { label: '🇹🇭 Таиланд',  id: 'thailand' },
   { label: '🇬🇷 Греция',   id: 'greece'   },
 ]
 
 const mobileTags = [
+  { code: 'РУ', label: 'Россия',   id: 'russia'   },
+  { code: '⛰',  label: 'Кавказ',   id: 'caucasus' },
   { code: 'АЕ', label: 'Дубай',    id: 'dubai'    },
   { code: 'TR', label: 'Турция',   id: 'turkey'   },
   { code: 'EG', label: 'Египет',   id: 'egypt'    },
   { code: 'TH', label: 'Таиланд',  id: 'thailand' },
   { code: 'GR', label: 'Греция',   id: 'greece'   },
-  { code: 'MV', label: 'Мальдивы', id: 'maldives' },
+  { code: '🇬🇪', label: 'Грузия',   id: 'georgia'  },
 ]
 
 export default function Home() {
