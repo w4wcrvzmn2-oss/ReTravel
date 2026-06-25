@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Shield, Zap, HeadphonesIcon, ChevronRight, Star, ArrowRight } from 'lucide-react'
+import { Shield, Zap, HeadphonesIcon, ChevronRight, Star, ArrowRight, MapPin, Calendar, Users } from 'lucide-react'
 import SearchBar from '../components/ui/SearchBar'
 import TourCard from '../components/ui/TourCard'
 import DestinationCard from '../components/ui/DestinationCard'
@@ -29,6 +29,15 @@ const quickTags = [
   { label: '🇬🇷 Греция',   id: 'greece'   },
 ]
 
+const mobileTags = [
+  { code: 'АЕ', label: 'Дубай',    id: 'dubai'    },
+  { code: 'TR', label: 'Турция',   id: 'turkey'   },
+  { code: 'EG', label: 'Египет',   id: 'egypt'    },
+  { code: 'TH', label: 'Таиланд',  id: 'thailand' },
+  { code: 'GR', label: 'Греция',   id: 'greece'   },
+  { code: 'MV', label: 'Мальдивы', id: 'maldives' },
+]
+
 export default function Home() {
   const [popularDestinations, setPopularDestinations] = useState(
     staticDestinations.filter((d) => d.popular).slice(0, 8)
@@ -54,61 +63,93 @@ export default function Home() {
       <section className="relative overflow-hidden bg-sand-50 dark:bg-dark-950 pt-16 md:pt-20">
 
         {/* ── MOBILE HERO ── */}
-        <div className="md:hidden">
-          {/* Hero image with gradient overlay */}
-          <div className="relative h-[52vw] min-h-[200px] max-h-[280px] overflow-hidden">
-            <img
-              src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80"
-              alt="Путешествие"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-sand-50/10 via-transparent to-sand-50 dark:from-dark-950/10 dark:to-dark-950" />
-            {/* Coral badge */}
-            <div className="absolute top-3 right-3 bg-primary-500 text-white rounded-[14px] px-3 py-2 shadow-[0_4px_14px_rgba(232,93,61,.45)]">
-              <p className="font-mono text-[8px] font-bold tracking-widest opacity-80 leading-none mb-0.5">ПУТЕШЕСТВЕННИКОВ</p>
-              <p className="font-display font-black text-lg leading-none">50 000+</p>
+        <div className="md:hidden px-4 pt-3 pb-8">
+
+          {/* Kicker */}
+          <span className="kicker block mb-4">200+ ТУРОПЕРАТОРОВ</span>
+
+          {/* Heading */}
+          <h1 className="font-display font-black text-[44px] leading-[0.90] tracking-[-0.03em] text-ink dark:text-sand-50 mb-6">
+            Найдите<br />
+            идеальное<br />
+            <span className="text-primary-500">путешест<br />вие</span>
+          </h1>
+
+          {/* Search card */}
+          <div className="bg-white dark:bg-dark-800 rounded-[20px] p-3.5 mb-4 border border-sand-100 dark:border-dark-700"
+               style={{ boxShadow: '0 8px 28px rgba(60,40,20,.10)' }}>
+            {/* Destination */}
+            <div className="flex items-center gap-2.5 px-3 py-3 rounded-[12px] mb-2"
+                 style={{ background: 'rgba(240,238,233,.7)' }}>
+              <MapPin className="w-4 h-4 flex-shrink-0" style={{ color: '#c7bfb0' }} />
+              <input
+                type="text"
+                placeholder="Любое направление"
+                className="flex-1 text-[14px] bg-transparent outline-none font-sans placeholder-[#c7bfb0] text-ink dark:text-sand-50"
+              />
             </div>
+            {/* Date + Tourists */}
+            <div className="grid grid-cols-2 gap-2 mb-3">
+              <div className="flex items-center gap-2 px-3 py-3 rounded-[12px]"
+                   style={{ background: 'rgba(240,238,233,.7)' }}>
+                <Calendar className="w-4 h-4 flex-shrink-0" style={{ color: '#c7bfb0' }} />
+                <input
+                  type="text"
+                  placeholder="12 июля"
+                  className="min-w-0 flex-1 text-[13px] bg-transparent outline-none font-sans placeholder-[#c7bfb0] text-ink dark:text-sand-50"
+                />
+              </div>
+              <div className="flex items-center gap-2 px-3 py-3 rounded-[12px]"
+                   style={{ background: 'rgba(240,238,233,.7)' }}>
+                <Users className="w-4 h-4 flex-shrink-0" style={{ color: '#c7bfb0' }} />
+                <input
+                  type="text"
+                  placeholder="2 туриста"
+                  className="min-w-0 flex-1 text-[13px] bg-transparent outline-none font-sans placeholder-[#c7bfb0] text-ink dark:text-sand-50"
+                />
+              </div>
+            </div>
+            <Link to="/search" className="btn-primary w-full py-3.5 text-[15px] font-bold">
+              Найти туры
+            </Link>
           </div>
 
-          <div className="px-4 pt-2 pb-6">
-            <span className="kicker mb-3 block text-[10px]">RETRAVEL · ПОИСК ТУРОВ · 2026</span>
-            <h1 className="font-display font-black text-[38px] leading-[0.95] tracking-[-0.025em] text-ink dark:text-sand-50 mb-3">
-              Путешествие<br />
-              начинается с{' '}
-              <span className="text-primary-500">горизонта</span>
-            </h1>
-            <p className="font-sans text-[14px] leading-[1.6] text-sand-600 dark:text-sand-400 mb-5">
-              Сравниваем туры от 200+ операторов — лучшая цена без лишних усилий.
-            </p>
-
-            {/* Search */}
-            <div className="bg-white dark:bg-dark-800 rounded-[18px] shadow-warm-lg p-1.5 mb-4 border border-sand-200 dark:border-dark-700">
-              <SearchBar />
-            </div>
-
-            {/* Quick tags — horizontal scroll */}
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin -mx-4 px-4">
-              {quickTags.map((t) => (
-                <Link
-                  key={t.id}
-                  to={`/search?destination=${t.id}`}
-                  className="flex-shrink-0 px-3 py-1.5 bg-sand-100 dark:bg-dark-800 hover:bg-primary-50 dark:hover:bg-primary-900/20 text-sand-700 dark:text-sand-400 text-sm rounded-full border border-sand-200 dark:border-dark-700 transition-colors font-medium"
+          {/* Country tags */}
+          <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4" style={{ scrollbarWidth: 'none' }}>
+            {mobileTags.map((t) => (
+              <Link
+                key={t.id}
+                to={`/search?destination=${t.id}`}
+                className="flex-shrink-0 flex items-center gap-1.5 pl-1.5 pr-3 py-1.5 rounded-full text-[13px] font-semibold transition-opacity hover:opacity-80"
+                style={{ background: '#191512', color: '#ece6d8' }}
+              >
+                <span
+                  className="text-[10px] font-mono font-bold w-7 text-center py-0.5 rounded-[5px]"
+                  style={{ background: '#2a2318', color: '#9a9183' }}
                 >
-                  {t.label}
-                </Link>
-              ))}
-            </div>
+                  {t.code}
+                </span>
+                {t.label}
+              </Link>
+            ))}
+          </div>
 
-            {/* Quick stats row */}
-            <div className="grid grid-cols-3 gap-3 mt-5">
-              {[
-                { v: '50k+', l: 'Туристов' },
-                { v: '3000+', l: 'Туров' },
-                { v: '4.9★', l: 'Рейтинг' },
-              ].map((s) => (
-                <div key={s.l} className="bg-sand-100 dark:bg-dark-800 rounded-[14px] px-3 py-2.5 text-center">
-                  <p className="font-display font-black text-[18px] text-ink dark:text-sand-50 leading-none">{s.v}</p>
-                  <p className="font-mono text-[9px] font-bold text-sand-500 tracking-wide mt-0.5">{s.l.toUpperCase()}</p>
+          {/* Горящие — horizontal scroll */}
+          <div className="mt-7">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-display font-bold text-[22px] text-ink dark:text-sand-50">Горящие</h2>
+              <Link
+                to="/search?is_hot=true"
+                className="text-[13px] font-semibold flex items-center gap-0.5"
+                style={{ color: '#9a9183' }}
+              >
+                Все <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+            <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-thin">
+              {featuredTours.slice(0, 5).map((tour) => (
+                <div key={tour.id} className="flex-shrink-0 w-[73vw] max-w-[288px]">
+                  <TourCard tour={tour} />
                 </div>
               ))}
             </div>
@@ -274,8 +315,8 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* Mobile: горизонтальный скролл */}
-          <div className="md:hidden flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-thin">
+          {/* Mobile: горизонтальный скролл (hidden — shown in mobile hero above) */}
+          <div className="hidden gap-4 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-thin">
             {featuredTours.map((tour) => (
               <div key={tour.id} className="flex-shrink-0 w-[75vw] max-w-[300px]">
                 <TourCard tour={tour} />
