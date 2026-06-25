@@ -18,7 +18,7 @@ const ROWS = [
   { key: 'meal', label: 'Питание', render: (t) => t.mealType },
   { key: 'hotel', label: 'Отель', render: (t) => <span className="text-sm">{t.hotel}</span> },
   { key: 'destination', label: 'Страна', render: (t) => t.country },
-  { key: 'hot', label: 'Горящий', render: (t) => t.isHot ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <XIcon className="w-4 h-4 text-gray-300 mx-auto" /> },
+  { key: 'hot', label: 'Горящий', render: (t) => t.isHot ? <Check className="w-5 h-5 text-green-500 mx-auto" /> : <XIcon className="w-4 h-4 text-sand-300 dark:text-sand-500 mx-auto" /> },
 ]
 
 export default function Compare() {
@@ -50,7 +50,7 @@ export default function Compare() {
   }
 
   return (
-    <div className="pt-24 min-h-screen bg-gray-50 dark:bg-dark-900">
+    <div className="pt-24 min-h-screen bg-sand-50 dark:bg-dark-950">
       <div className="page-container py-8 pb-16">
         <h1 className="text-2xl font-black text-gray-900 dark:text-white mb-8">
           Сравнение туров

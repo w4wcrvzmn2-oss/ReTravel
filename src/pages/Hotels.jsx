@@ -108,7 +108,7 @@ export default function Hotels() {
           <aside className="w-56 shrink-0 hidden lg:block">
             <div className="space-y-6">
               <div>
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 uppercase tracking-wide">
+                <h4 className="text-sm font-semibold text-sand-600 dark:text-sand-200 mb-3 uppercase tracking-wide">
                   Звёзды
                 </h4>
                 <div className="flex flex-wrap gap-2">
@@ -120,7 +120,7 @@ export default function Hotels() {
                         'px-3 py-1.5 rounded-lg text-sm font-medium border-2 transition-colors',
                         stars.includes(s)
                           ? 'border-primary-500 bg-blue-50 dark:bg-primary-900/20 text-primary-600'
-                          : 'border-gray-200 dark:border-dark-600 text-gray-600 dark:text-gray-300',
+                          : 'border-sand-200 dark:border-dark-600 text-sand-600 dark:text-sand-300',
                       ].join(' ')}
                     >
                       {'★'.repeat(s)}
@@ -149,7 +149,7 @@ export default function Hotels() {
                   <option value="price_asc">Сначала дешевле</option>
                   <option value="price_desc">Сначала дороже</option>
                 </select>
-                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-sand-400 dark:text-sand-500 pointer-events-none" />
               </div>
             </div>
 
@@ -202,7 +202,7 @@ function HotelCard({ hotel, nights = 2 }) {
         <div className="flex items-center gap-1 mb-3">
           <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
           <span className="font-semibold text-gray-900 dark:text-white text-sm">{hotel.rating}</span>
-          <span className="text-xs text-gray-400">({hotel.reviewsCount} отзывов)</span>
+          <span className="text-xs text-sand-400 dark:text-sand-500">({hotel.reviewsCount} отзывов)</span>
         </div>
 
         {/* удобства */}
@@ -218,7 +218,7 @@ function HotelCard({ hotel, nights = 2 }) {
             <p className="text-xl font-black text-accent-500">
               {formatPrice(hotel.pricePerNight)}
             </p>
-            <p className="text-xs text-gray-400">за ночь</p>
+            <p className="text-xs text-sand-400 dark:text-sand-500">за ночь</p>
           </div>
           <Link
             to={`/search?destination=${hotel.destination}`}

@@ -68,7 +68,7 @@ export default function SearchBar({ compact = false, initialValues = {} }) {
     return (
       <form onSubmit={submitTours} className="flex flex-wrap gap-3">
         <div className="flex-1 min-w-[180px] relative">
-          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sand-400 dark:text-sand-500" />
           <select
             value={tours.destination}
             onChange={(e) => setTours((f) => ({ ...f, destination: e.target.value }))}
@@ -81,7 +81,7 @@ export default function SearchBar({ compact = false, initialValues = {} }) {
           </select>
         </div>
         <div className="flex-1 min-w-[160px] relative">
-          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sand-400 dark:text-sand-500 pointer-events-none" />
           <input
             type="date"
             value={tours.dateFrom}
@@ -90,7 +90,7 @@ export default function SearchBar({ compact = false, initialValues = {} }) {
           />
         </div>
         <div className="w-28 relative">
-          <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sand-400 dark:text-sand-500" />
           <input
             type="number" min={1} max={20}
             value={tours.travelers}
@@ -137,7 +137,7 @@ export default function SearchBar({ compact = false, initialValues = {} }) {
               <div>
                 <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">Куда</label>
                 <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sand-400 dark:text-sand-500" />
                   <select value={tours.destination} onChange={(e) => setTours((f) => ({ ...f, destination: e.target.value }))} className="input-field pl-10 appearance-none cursor-pointer">
                     <option value="">Любое направление</option>
                     {destinations.map((d) => <option key={d.id} value={d.id}>{d.flag} {d.name}</option>)}
@@ -147,21 +147,21 @@ export default function SearchBar({ compact = false, initialValues = {} }) {
               <div>
                 <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">Дата выезда</label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sand-400 dark:text-sand-500 pointer-events-none" />
                   <input type="date" value={tours.dateFrom} onChange={(e) => setTours((f) => ({ ...f, dateFrom: e.target.value }))} className="input-field pl-10" />
                 </div>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">Дата возврата</label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sand-400 dark:text-sand-500 pointer-events-none" />
                   <input type="date" value={tours.dateTo} onChange={(e) => setTours((f) => ({ ...f, dateTo: e.target.value }))} className="input-field pl-10" />
                 </div>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">Туристы</label>
                 <div className="relative">
-                  <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sand-400 dark:text-sand-500" />
                   <input type="number" min={1} max={20} value={tours.travelers} onChange={(e) => setTours((f) => ({ ...f, travelers: +e.target.value }))} className="input-field pl-10" />
                 </div>
               </div>
@@ -194,14 +194,14 @@ export default function SearchBar({ compact = false, initialValues = {} }) {
               <div>
                 <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">Дата вылета</label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sand-400 dark:text-sand-500 pointer-events-none" />
                   <input type="date" value={flights.date} onChange={(e) => setFlights((f) => ({ ...f, date: e.target.value }))} className="input-field pl-10" />
                 </div>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">Пассажиры</label>
                 <div className="relative">
-                  <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sand-400 dark:text-sand-500" />
                   <input type="number" min={1} max={9} value={flights.passengers} onChange={(e) => setFlights((f) => ({ ...f, passengers: +e.target.value }))} className="input-field pl-10" />
                 </div>
               </div>
@@ -221,7 +221,7 @@ export default function SearchBar({ compact = false, initialValues = {} }) {
               <div>
                 <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">Направление</label>
                 <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sand-400 dark:text-sand-500" />
                   <select value={hotels.destination} onChange={(e) => setHotels((f) => ({ ...f, destination: e.target.value }))} className="input-field pl-10 appearance-none">
                     <option value="">Любое</option>
                     {destinations.map((d) => <option key={d.id} value={d.id}>{d.flag} {d.name}</option>)}
@@ -231,21 +231,21 @@ export default function SearchBar({ compact = false, initialValues = {} }) {
               <div>
                 <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">Заезд</label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sand-400 dark:text-sand-500 pointer-events-none" />
                   <input type="date" value={hotels.checkin} onChange={(e) => setHotels((f) => ({ ...f, checkin: e.target.value }))} className="input-field pl-10" />
                 </div>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">Выезд</label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sand-400 dark:text-sand-500 pointer-events-none" />
                   <input type="date" value={hotels.checkout} onChange={(e) => setHotels((f) => ({ ...f, checkout: e.target.value }))} className="input-field pl-10" />
                 </div>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">Гостей</label>
                 <div className="relative">
-                  <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sand-400 dark:text-sand-500" />
                   <input type="number" min={1} max={10} value={hotels.guests} onChange={(e) => setHotels((f) => ({ ...f, guests: +e.target.value }))} className="input-field pl-10" />
                 </div>
               </div>

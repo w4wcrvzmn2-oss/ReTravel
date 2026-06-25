@@ -84,33 +84,30 @@ export default function Home() {
           <div className="bg-white dark:bg-dark-800 rounded-[20px] p-3.5 mb-4 border border-sand-100 dark:border-dark-700"
                style={{ boxShadow: '0 8px 28px rgba(60,40,20,.10)' }}>
             {/* Destination */}
-            <div className="flex items-center gap-2.5 px-3 py-3 rounded-[12px] mb-2"
-                 style={{ background: 'rgba(240,238,233,.7)' }}>
-              <MapPin className="w-4 h-4 flex-shrink-0" style={{ color: '#c7bfb0' }} />
+            <div className="flex items-center gap-2.5 px-3 py-3 rounded-[12px] mb-2 bg-sand-100 dark:bg-dark-900">
+              <MapPin className="w-4 h-4 flex-shrink-0 text-sand-400 dark:text-sand-500" />
               <input
                 type="text"
                 placeholder="Любое направление"
-                className="flex-1 text-[14px] bg-transparent outline-none font-sans placeholder-[#c7bfb0] text-ink dark:text-sand-50"
+                className="flex-1 text-[14px] bg-transparent outline-none font-sans text-sand-400 placeholder-sand-400 dark:placeholder-sand-500 dark:text-sand-400 focus:text-ink dark:focus:text-sand-50"
               />
             </div>
             {/* Date + Tourists */}
             <div className="grid grid-cols-2 gap-2 mb-3">
-              <div className="flex items-center gap-2 px-3 py-3 rounded-[12px]"
-                   style={{ background: 'rgba(240,238,233,.7)' }}>
-                <Calendar className="w-4 h-4 flex-shrink-0" style={{ color: '#c7bfb0' }} />
+              <div className="flex items-center gap-2 px-3 py-3 rounded-[12px] bg-sand-100 dark:bg-dark-900">
+                <Calendar className="w-4 h-4 flex-shrink-0 text-sand-400 dark:text-sand-500" />
                 <input
                   type="text"
                   placeholder="12 июля"
-                  className="min-w-0 flex-1 text-[13px] bg-transparent outline-none font-sans placeholder-[#c7bfb0] text-ink dark:text-sand-50"
+                  className="min-w-0 flex-1 text-[13px] bg-transparent outline-none font-sans text-sand-500 placeholder-sand-400 dark:placeholder-sand-500 dark:text-sand-400 focus:text-ink dark:focus:text-sand-50"
                 />
               </div>
-              <div className="flex items-center gap-2 px-3 py-3 rounded-[12px]"
-                   style={{ background: 'rgba(240,238,233,.7)' }}>
-                <Users className="w-4 h-4 flex-shrink-0" style={{ color: '#c7bfb0' }} />
+              <div className="flex items-center gap-2 px-3 py-3 rounded-[12px] bg-sand-100 dark:bg-dark-900">
+                <Users className="w-4 h-4 flex-shrink-0 text-sand-400 dark:text-sand-500" />
                 <input
                   type="text"
                   placeholder="2 туриста"
-                  className="min-w-0 flex-1 text-[13px] bg-transparent outline-none font-sans placeholder-[#c7bfb0] text-ink dark:text-sand-50"
+                  className="min-w-0 flex-1 text-[13px] bg-transparent outline-none font-sans text-sand-500 placeholder-sand-400 dark:placeholder-sand-500 dark:text-sand-400 focus:text-ink dark:focus:text-sand-50"
                 />
               </div>
             </div>

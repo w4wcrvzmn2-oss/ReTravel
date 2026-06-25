@@ -75,7 +75,7 @@ export default function TourDetail() {
       <div className="pt-24 min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">😕</div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Тур не найден</h1>
+          <h1 className="text-2xl font-bold text-ink dark:text-sand-50 mb-3">Тур не найден</h1>
           <Link to="/search" className="btn-primary">Вернуться к поиску</Link>
         </div>
       </div>
@@ -156,7 +156,7 @@ export default function TourDetail() {
       <div className="page-container py-4">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-sm"
+          className="flex items-center gap-1 text-sand-500 dark:text-sand-400 hover:text-sand-600 dark:hover:text-sand-300 text-sm"
         >
           <ChevronLeft className="w-4 h-4" />
           Назад
@@ -222,7 +222,7 @@ export default function TourDetail() {
                       'p-2.5 rounded-xl border-2 transition-all',
                       fav
                         ? 'border-red-500 bg-red-50 text-red-500'
-                        : 'border-gray-200 dark:border-dark-600 text-gray-400 hover:border-red-400',
+                        : 'border-gray-200 dark:border-dark-600 text-sand-400 dark:text-sand-500 hover:border-red-400',
                     ].join(' ')}
                     title={fav ? 'Убрать из избранного' : 'В избранное'}
                   >
@@ -234,7 +234,7 @@ export default function TourDetail() {
                       'p-2.5 rounded-xl border-2 transition-all',
                       comparing
                         ? 'border-primary-500 bg-primary-50 text-primary-500'
-                        : 'border-gray-200 dark:border-dark-600 text-gray-400 hover:border-primary-400',
+                        : 'border-gray-200 dark:border-dark-600 text-sand-400 dark:text-sand-500 hover:border-primary-400',
                     ].join(' ')}
                     title={comparing ? 'Убрать из сравнения' : 'Сравнить'}
                   >
@@ -265,7 +265,7 @@ export default function TourDetail() {
               ].map((item) => (
                 <div key={item.label} className="card p-4">
                   <div className="mb-1">{item.icon}</div>
-                  <p className="text-xs text-gray-400 mb-0.5">{item.label}</p>
+                  <p className="text-xs text-sand-400 dark:text-sand-500 mb-0.5">{item.label}</p>
                   <p className="font-semibold text-gray-900 dark:text-white text-sm">{item.value}</p>
                 </div>
               ))}
@@ -355,7 +355,7 @@ export default function TourDetail() {
                 <h2 className="text-lg font-bold text-gray-900 dark:text-white">
                   Отзывы
                   {allReviews.length > 0 && (
-                    <span className="ml-2 text-sm font-normal text-gray-400">({allReviews.length})</span>
+                    <span className="ml-2 text-sm font-normal text-sand-400 dark:text-sand-500">({allReviews.length})</span>
                   )}
                 </h2>
                 {allReviews.length > 0 && (
@@ -367,7 +367,7 @@ export default function TourDetail() {
               </div>
 
               {allReviews.length === 0 ? (
-                <p className="text-gray-400 text-sm py-4 text-center">
+                <p className="text-sand-400 dark:text-sand-500 text-sm py-4 text-center">
                   Отзывов пока нет. Будьте первым!
                 </p>
               ) : (
@@ -381,19 +381,19 @@ export default function TourDetail() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
                             <span className="font-semibold text-gray-900 dark:text-white text-sm">{review.author}</span>
-                            <span className="text-xs text-gray-400">{review.date}</span>
+                            <span className="text-xs text-sand-400 dark:text-sand-500">{review.date}</span>
                           </div>
                           <div className="flex mb-2">
                             {[1, 2, 3, 4, 5].map((s) => (
                               <Star
                                 key={s}
-                                className={`w-3.5 h-3.5 ${s <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}`}
+                                className={`w-3.5 h-3.5 ${s <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-sand-200 dark:text-dark-600'}`}
                               />
                             ))}
                           </div>
                           <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{review.text}</p>
                           {review.helpful > 0 && (
-                            <div className="flex items-center gap-1 mt-2 text-xs text-gray-400">
+                            <div className="flex items-center gap-1 mt-2 text-xs text-sand-400 dark:text-sand-500">
                               <ThumbsUp className="w-3.5 h-3.5" />
                               Полезно: {review.helpful}
                             </div>
@@ -418,7 +418,7 @@ export default function TourDetail() {
                         className="focus:outline-none"
                       >
                         <Star
-                          className={`w-6 h-6 transition-colors ${s <= reviewRating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300 hover:text-yellow-300'}`}
+                          className={`w-6 h-6 transition-colors ${s <= reviewRating ? 'text-yellow-400 fill-yellow-400' : 'text-sand-300 dark:text-sand-500 hover:text-yellow-300'}`}
                         />
                       </button>
                     ))}
@@ -436,7 +436,7 @@ export default function TourDetail() {
                 </form>
               ) : (
                 <div className="border-t border-gray-100 dark:border-dark-700 pt-5 text-center">
-                  <p className="text-sm text-gray-400 mb-3">Чтобы оставить отзыв, нужно войти</p>
+                  <p className="text-sm text-sand-400 dark:text-sand-500 mb-3">Чтобы оставить отзыв, нужно войти</p>
                   <Link to="/auth" className="btn-outline text-sm py-2 px-5">Войти</Link>
                 </div>
               )}
@@ -450,12 +450,12 @@ export default function TourDetail() {
               <div className="mb-6">
                 {tour.originalPrice && (
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-gray-400 line-through text-sm">{formatPrice(tour.originalPrice)}</span>
+                    <span className="text-sand-400 dark:text-sand-500 line-through text-sm">{formatPrice(tour.originalPrice)}</span>
                     <span className="badge-red text-xs">-{discount}%</span>
                   </div>
                 )}
                 <div className="text-3xl font-black text-accent-500">{formatPrice(tour.price)}</div>
-                <p className="text-gray-400 text-sm">за одного человека</p>
+                <p className="text-sand-400 dark:text-sand-500 text-sm">за одного человека</p>
               </div>
 
               {/* отель */}
@@ -470,11 +470,11 @@ export default function TourDetail() {
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Туристы</label>
                 <div className="flex items-center gap-3">
-                  <button onClick={() => setTravelers(Math.max(1, travelers - 1))} className="w-9 h-9 rounded-lg border-2 border-gray-200 dark:border-dark-600 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:border-primary-500 transition-colors text-lg font-bold">−</button>
+                  <button onClick={() => setTravelers(Math.max(1, travelers - 1))} className="w-9 h-9 rounded-lg border-2 border-gray-200 dark:border-dark-600 flex items-center justify-center text-sand-600 dark:text-sand-300 hover:border-primary-500 transition-colors text-lg font-bold">−</button>
                   <span className="flex items-center gap-1 font-semibold text-gray-900 dark:text-white min-w-[40px] justify-center">
-                    <Users className="w-4 h-4 text-gray-400" />{travelers}
+                    <Users className="w-4 h-4 text-sand-400 dark:text-sand-500" />{travelers}
                   </span>
-                  <button onClick={() => setTravelers(Math.min(20, travelers + 1))} className="w-9 h-9 rounded-lg border-2 border-gray-200 dark:border-dark-600 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:border-primary-500 transition-colors text-lg font-bold">+</button>
+                  <button onClick={() => setTravelers(Math.min(20, travelers + 1))} className="w-9 h-9 rounded-lg border-2 border-gray-200 dark:border-dark-600 flex items-center justify-center text-sand-600 dark:text-sand-300 hover:border-primary-500 transition-colors text-lg font-bold">+</button>
                 </div>
               </div>
 
@@ -482,7 +482,7 @@ export default function TourDetail() {
               <div className="mb-5">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Желаемая дата выезда</label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sand-400 dark:text-sand-500 pointer-events-none" />
                   <input
                     type="date"
                     value={date}
@@ -518,7 +518,7 @@ export default function TourDetail() {
                 </button>
               )}
 
-              <div className="mt-4 text-xs text-gray-400 text-center">
+              <div className="mt-4 text-xs text-sand-400 dark:text-sand-500 text-center">
                 Вылет из: {tour.departureCities.join(', ')}
               </div>
             </div>

@@ -122,8 +122,8 @@ export default function Search() {
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-4 mb-6">
-              <p className="text-gray-500 dark:text-gray-400 text-sm">
-                Найдено <span className="font-semibold text-gray-900 dark:text-white">{total}</span> туров
+              <p className="text-sand-500 dark:text-sand-400 text-sm">
+                Найдено <span className="font-semibold text-ink dark:text-sand-50">{total}</span> туров
               </p>
               <div className="flex items-center gap-3">
                 <button
@@ -146,7 +146,7 @@ export default function Search() {
                       <option key={o.id} value={o.id}>{o.label}</option>
                     ))}
                   </select>
-                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-sand-400 dark:text-sand-500 pointer-events-none" />
                 </div>
               </div>
             </div>
@@ -154,14 +154,14 @@ export default function Search() {
             {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                 {Array.from({ length: PER_PAGE }).map((_, i) => (
-                  <div key={i} className="card h-80 animate-pulse bg-gray-100 dark:bg-dark-800" />
+                  <div key={i} className="card h-80 animate-pulse bg-sand-100 dark:bg-dark-800" />
                 ))}
               </div>
             ) : tours.length === 0 ? (
               <div className="card p-12 text-center">
                 <div className="text-5xl mb-4">😞</div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Туры не найдены</h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-6">Попробуйте изменить фильтры</p>
+                <h3 className="text-xl font-bold text-ink dark:text-sand-50 mb-2">Туры не найдены</h3>
+                <p className="text-sand-500 dark:text-sand-400 mb-6">Попробуйте изменить фильтры</p>
                 <button onClick={resetFilters} className="btn-outline">Сбросить фильтры</button>
               </div>
             ) : (
@@ -177,7 +177,7 @@ export default function Search() {
                     <button
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
                       disabled={page === 1}
-                      className="p-2 rounded-lg border border-gray-200 dark:border-dark-600 disabled:opacity-40 hover:border-primary-400 transition-colors"
+                      className="p-2 rounded-lg border border-sand-200 dark:border-dark-600 disabled:opacity-40 hover:border-primary-400 transition-colors"
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
@@ -190,7 +190,7 @@ export default function Search() {
                           'w-9 h-9 rounded-lg text-sm font-medium transition-colors',
                           n === page
                             ? 'bg-primary-500 text-white'
-                            : 'border border-gray-200 dark:border-dark-600 text-gray-700 dark:text-gray-300 hover:border-primary-400',
+                            : 'border border-sand-200 dark:border-dark-600 text-sand-600 dark:text-sand-300 hover:border-primary-400',
                         ].join(' ')}
                       >
                         {n}
@@ -200,7 +200,7 @@ export default function Search() {
                     <button
                       onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                       disabled={page === totalPages}
-                      className="p-2 rounded-lg border border-gray-200 dark:border-dark-600 disabled:opacity-40 hover:border-primary-400 transition-colors"
+                      className="p-2 rounded-lg border border-sand-200 dark:border-dark-600 disabled:opacity-40 hover:border-primary-400 transition-colors"
                     >
                       <ChevronRight className="w-4 h-4" />
                     </button>
@@ -215,9 +215,9 @@ export default function Search() {
       {filtersOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/50" onClick={() => setFiltersOpen(false)} />
-          <div className="absolute right-0 top-0 bottom-0 w-80 bg-white dark:bg-dark-800 overflow-y-auto p-6">
+          <div className="absolute right-0 top-0 bottom-0 w-80 bg-white dark:bg-dark-800 overflow-y-auto p-6 dark:text-sand-50">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-bold text-gray-900 dark:text-white text-lg">Фильтры</h3>
+              <h3 className="font-bold text-ink dark:text-sand-50 text-lg">Фильтры</h3>
               <button onClick={() => setFiltersOpen(false)}><X className="w-5 h-5" /></button>
             </div>
             <FilterPanel filters={filters} setFilter={setFilter} toggleArr={toggleArr} hasActive={hasActiveFilters} onReset={resetFilters} />
@@ -247,7 +247,7 @@ function FilterPanel({ filters, setFilter, toggleArr, hasActive, onReset }) {
           {CATEGORIES.map((c) => (
             <label key={c.id} className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={filters.categories.includes(c.id)} onChange={() => toggleArr('categories', c.id)} className="w-4 h-4 rounded text-primary-500" />
-              <span className="text-sm text-gray-700 dark:text-gray-300">{c.label}</span>
+              <span className="text-sm text-sand-600 dark:text-sand-300">{c.label}</span>
             </label>
           ))}
         </div>
@@ -272,7 +272,7 @@ function FilterPanel({ filters, setFilter, toggleArr, hasActive, onReset }) {
                 'px-3 py-1.5 rounded-lg text-sm font-medium border-2 transition-colors',
                 filters.stars.includes(s)
                   ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-600'
-                  : 'border-gray-200 dark:border-dark-600 text-gray-600 dark:text-gray-300 hover:border-gray-300',
+                  : 'border-sand-200 dark:border-dark-600 text-sand-600 dark:text-sand-300 hover:border-sand-300',
               ].join(' ')}
             >
               {'★'.repeat(s)}
@@ -287,7 +287,7 @@ function FilterPanel({ filters, setFilter, toggleArr, hasActive, onReset }) {
           onChange={(e) => setFilter('priceMax', +e.target.value)}
           className="w-full accent-primary-500"
         />
-        <div className="flex justify-between text-xs text-gray-400 mt-1">
+        <div className="flex justify-between text-xs text-sand-400 dark:text-sand-500 mt-1">
           <span>30 000 ₽</span>
           <span>250 000 ₽</span>
         </div>
@@ -299,7 +299,7 @@ function FilterPanel({ filters, setFilter, toggleArr, hasActive, onReset }) {
 function FilterSection({ title, children }) {
   return (
     <div>
-      <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 uppercase tracking-wide">{title}</h4>
+      <h4 className="text-sm font-semibold text-sand-600 dark:text-sand-200 mb-3 uppercase tracking-wide">{title}</h4>
       {children}
     </div>
   )

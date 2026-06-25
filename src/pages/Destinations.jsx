@@ -30,7 +30,7 @@ export default function Destinations() {
           </p>
           {/* поиск */}
           <div className="relative max-w-md mx-auto mt-6">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-sand-400 dark:text-sand-500" />
             <input
               type="text"
               placeholder="Найти направление..."

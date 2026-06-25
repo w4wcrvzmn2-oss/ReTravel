@@ -103,33 +103,33 @@ export default function Cart() {
 
   if (step === 'success' && order) {
     return (
-      <div className="pt-24 min-h-screen bg-gray-50 dark:bg-dark-900 flex items-center">
+      <div className="pt-24 min-h-screen bg-sand-50 dark:bg-dark-950 flex items-center">
         <div className="page-container py-16">
           <div className="max-w-md mx-auto card p-10 text-center">
             <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-5">
               <Check className="w-8 h-8 text-green-600" />
             </div>
-            <h1 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Заказ оформлен!</h1>
-            <p className="text-gray-500 dark:text-gray-400 mb-2">
+            <h1 className="text-2xl font-black text-ink dark:text-sand-50 mb-2">Заказ оформлен!</h1>
+            <p className="text-sand-500 dark:text-sand-400 mb-2">
               Номер заказа: <span className="font-bold text-primary-500">{order.id}</span>
             </p>
-            <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
+            <p className="text-sand-500 dark:text-sand-400 text-sm mb-6">
               Мы отправим подтверждение на{' '}
               <span className="font-medium">{order.contact.email}</span> и свяжемся с вами в течение 15 минут.
             </p>
-            <div className="bg-gray-50 dark:bg-dark-700 rounded-xl p-4 mb-6 text-sm">
+            <div className="bg-sand-50 dark:bg-dark-800 rounded-xl p-4 mb-6 text-sm">
               <div className="flex justify-between mb-1">
-                <span className="text-gray-500">Итого оплачено</span>
+                <span className="text-sand-500 dark:text-sand-400">Итого оплачено</span>
                 <span className="font-bold text-accent-500">{formatPrice(total)}</span>
               </div>
               {promoApplied && (
                 <div className="flex justify-between mb-1">
-                  <span className="text-gray-500">Промокод {promoApplied.code}</span>
+                  <span className="text-sand-500 dark:text-sand-400">Промокод {promoApplied.code}</span>
                   <span className="text-green-600 font-medium">-{discount * 100}%</span>
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="text-gray-500">Туров</span>
+                <span className="text-sand-500 dark:text-sand-400">Туров</span>
                 <span>{order.items.length}</span>
               </div>
             </div>
@@ -145,11 +145,11 @@ export default function Cart() {
 
   if (items.length === 0) {
     return (
-      <div className="pt-24 min-h-screen bg-gray-50 dark:bg-dark-900 flex items-center">
+      <div className="pt-24 min-h-screen bg-sand-50 dark:bg-dark-950 flex items-center">
         <div className="page-container py-16 text-center">
           <div className="text-6xl mb-4">🛒</div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Корзина пуста</h1>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">Добавьте туры из каталога, чтобы продолжить</p>
+          <h1 className="text-2xl font-bold text-ink dark:text-sand-50 mb-3">Корзина пуста</h1>
+          <p className="text-sand-500 dark:text-sand-400 mb-6">Добавьте туры из каталога, чтобы продолжить</p>
           <Link to="/search" className="btn-primary">
             <ShoppingCart className="w-5 h-5" /> Перейти к турам
           </Link>
@@ -159,7 +159,7 @@ export default function Cart() {
   }
 
   return (
-    <div className="pt-24 min-h-screen bg-gray-50 dark:bg-dark-900">
+    <div className="pt-24 min-h-screen bg-sand-50 dark:bg-dark-950">
       <div className="page-container py-8 pb-16">
         {/* шаги */}
         <div className="flex items-center gap-3 mb-8">
@@ -175,7 +175,7 @@ export default function Cart() {
           <div className="lg:col-span-2 space-y-4">
             {step === 'cart' && (
               <>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Корзина ({items.length})</h1>
+                <h1 className="text-xl font-bold text-ink dark:text-sand-50 mb-2">Корзина ({items.length})</h1>
                 {items.map((item) => (
                   <CartItem
                     key={item.tour.id}
@@ -189,16 +189,16 @@ export default function Cart() {
 
             {step === 'checkout' && (
               <div className="card p-6">
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-5">Данные для бронирования</h2>
+                <h2 className="text-lg font-bold text-ink dark:text-sand-50 mb-5">Данные для бронирования</h2>
                 <form onSubmit={handleOrder} className="space-y-4">
                   <Field label="Имя и фамилия" value={form.name} onChange={(v) => set('name', v)} placeholder="Иван Иванов" error={errors.name} />
                   <Field label="Email" type="email" value={form.email} onChange={(v) => set('email', v)} placeholder="ivan@example.com" error={errors.email} />
                   <Field label="Телефон" type="tel" value={form.phone} onChange={(v) => set('phone', v)} placeholder="+7 (999) 000-00-00" error={errors.phone} />
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Комментарий (необязательно)</label>
+                    <label className="block text-sm font-medium text-sand-600 dark:text-sand-300 mb-1.5">Комментарий (необязательно)</label>
                     <textarea value={form.comment} onChange={(e) => set('comment', e.target.value)} placeholder="Особые пожелания..." rows={3} className="input-field resize-none" />
                   </div>
-                  <p className="text-xs text-gray-400">Нажимая «Подтвердить», вы соглашаетесь с условиями бронирования.</p>
+                  <p className="text-xs text-sand-400 dark:text-sand-500">Нажимая «Подтвердить», вы соглашаетесь с условиями бронирования.</p>
                   <div className="flex gap-3 pt-2">
                     <button type="button" onClick={() => setStep('cart')} className="btn-outline">Назад</button>
                     <button type="submit" disabled={loading} className="btn-primary flex-1 justify-center">
@@ -217,15 +217,15 @@ export default function Cart() {
           {/* сводка */}
           <div className="lg:col-span-1">
             <div className="card p-6 sticky top-24">
-              <h3 className="font-bold text-gray-900 dark:text-white mb-4">Итого</h3>
+              <h3 className="font-bold text-ink dark:text-sand-50 mb-4">Итого</h3>
 
               <div className="space-y-2 mb-4">
                 {items.map((item) => (
                   <div key={item.tour.id} className="flex justify-between text-sm">
-                    <span className="text-gray-500 dark:text-gray-400 truncate flex-1 mr-2">
+                    <span className="text-sand-500 dark:text-sand-400 truncate flex-1 mr-2">
                       {item.tour.title} × {item.travelers}
                     </span>
-                    <span className="font-medium text-gray-900 dark:text-white shrink-0">
+                    <span className="font-medium text-ink dark:text-sand-50 shrink-0">
                       {formatPrice(item.tour.price * item.travelers)}
                     </span>
                   </div>
@@ -250,7 +250,7 @@ export default function Cart() {
                     <div>
                       <div className="flex gap-2">
                         <div className="relative flex-1">
-                          <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sand-400 dark:text-sand-500" />
                           <input
                             type="text"
                             value={promoInput}
@@ -270,12 +270,12 @@ export default function Cart() {
                 </div>
               )}
 
-              <div className="border-t border-gray-100 dark:border-dark-700 pt-4 mb-5 space-y-2">
+              <div className="border-t border-sand-100 dark:border-dark-700 pt-4 mb-5 space-y-2">
                 {promoApplied && (
                   <>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Сумма</span>
-                      <span className="text-gray-400 line-through">{formatPrice(rawTotal)}</span>
+                      <span className="text-sand-400 dark:text-sand-500">Сумма</span>
+                      <span className="text-sand-400 dark:text-sand-500 line-through">{formatPrice(rawTotal)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-green-600">Скидка {promoApplied.discount * 100}%</span>
@@ -295,7 +295,7 @@ export default function Cart() {
                 </button>
               )}
 
-              <p className="text-xs text-gray-400 mt-3 text-center">🔒 Безопасная оплата · Без скрытых комиссий</p>
+              <p className="text-xs text-sand-400 dark:text-sand-500 mt-3 text-center">🔒 Безопасная оплата · Без скрытых комиссий</p>
             </div>
           </div>
         </div>
@@ -311,24 +311,24 @@ function CartItem({ item, onRemove, onChangeTravelers }) {
       <img src={tour.image} alt={tour.title} className="w-24 h-24 rounded-xl object-cover shrink-0" />
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
-          <Link to={`/tour/${tour.id}`} className="font-semibold text-gray-900 dark:text-white hover:text-primary-500 transition-colors text-sm leading-tight">
+          <Link to={`/tour/${tour.id}`} className="font-semibold text-ink dark:text-sand-50 hover:text-primary-500 transition-colors text-sm leading-tight">
             {tour.title}
           </Link>
-          <button onClick={onRemove} className="p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors shrink-0">
+          <button onClick={onRemove} className="p-1.5 text-sand-400 dark:text-sand-500 hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors shrink-0">
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
-        <div className="flex flex-wrap gap-3 mt-1 text-xs text-gray-500 dark:text-gray-400">
+        <div className="flex flex-wrap gap-3 mt-1 text-xs text-sand-500 dark:text-sand-400">
           <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {tour.city}</span>
           <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {tour.nights} ночей</span>
         </div>
         <div className="flex items-center justify-between mt-3">
           <div className="flex items-center gap-2">
-            <button onClick={() => onChangeTravelers(travelers - 1)} className="w-7 h-7 rounded-lg border border-gray-200 dark:border-dark-600 flex items-center justify-center text-gray-600 hover:border-primary-400 transition-colors text-sm font-bold">−</button>
-            <span className="text-sm font-medium flex items-center gap-1 text-gray-700 dark:text-gray-300">
+            <button onClick={() => onChangeTravelers(travelers - 1)} className="w-7 h-7 rounded-lg border border-sand-200 dark:border-dark-600 flex items-center justify-center text-sand-600 dark:text-sand-300 hover:border-primary-400 transition-colors text-sm font-bold">−</button>
+            <span className="text-sm font-medium flex items-center gap-1 text-sand-600 dark:text-sand-300">
               <Users className="w-3.5 h-3.5" /> {travelers}
             </span>
-            <button onClick={() => onChangeTravelers(travelers + 1)} className="w-7 h-7 rounded-lg border border-gray-200 dark:border-dark-600 flex items-center justify-center text-gray-600 hover:border-primary-400 transition-colors text-sm font-bold">+</button>
+            <button onClick={() => onChangeTravelers(travelers + 1)} className="w-7 h-7 rounded-lg border border-sand-200 dark:border-dark-600 flex items-center justify-center text-sand-600 dark:text-sand-300 hover:border-primary-400 transition-colors text-sm font-bold">+</button>
           </div>
           <span className="font-bold text-accent-500">{(tour.price * travelers).toLocaleString('ru-RU')} ₽</span>
         </div>
@@ -340,7 +340,7 @@ function CartItem({ item, onRemove, onChangeTravelers }) {
 function Field({ label, type = 'text', value, onChange, placeholder, error }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{label}</label>
+      <label className="block text-sm font-medium text-sand-600 dark:text-sand-300 mb-1.5">{label}</label>
       <input
         type={type} value={value} onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
@@ -356,11 +356,11 @@ function StepBadge({ num, label, active, done }) {
     <div className="flex items-center gap-2">
       <div className={[
         'w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors',
-        active ? 'bg-primary-500 text-white' : done ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-dark-700 text-gray-400',
+        active ? 'bg-primary-500 text-white' : done ? 'bg-green-500 text-white' : 'bg-sand-200 dark:bg-dark-700 text-sand-400 dark:text-sand-500',
       ].join(' ')}>
         {done ? <Check className="w-3.5 h-3.5" /> : num}
       </div>
-      <span className={['text-sm font-medium hidden sm:block', active ? 'text-gray-900 dark:text-white' : 'text-gray-400'].join(' ')}>
+      <span className={['text-sm font-medium hidden sm:block', active ? 'text-ink dark:text-sand-50' : 'text-sand-400 dark:text-sand-500'].join(' ')}>
         {label}
       </span>
     </div>

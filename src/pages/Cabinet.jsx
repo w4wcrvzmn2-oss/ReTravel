@@ -65,9 +65,9 @@ export default function Cabinet() {
     .toUpperCase()
 
   return (
-    <div className="pt-24 min-h-screen bg-gray-50 dark:bg-dark-900">
+    <div className="pt-24 min-h-screen bg-sand-50 dark:bg-dark-950">
       <div className="page-container py-8 pb-16">
-        <h1 className="text-2xl font-black text-gray-900 dark:text-white mb-8">Личный кабинет</h1>
+        <h1 className="text-2xl font-black text-ink dark:text-sand-50 mb-8">Личный кабинет</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* профиль */}
@@ -77,17 +77,17 @@ export default function Cabinet() {
                 <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary-500 to-violet-600 flex items-center justify-center text-white text-2xl font-black mb-3">
                   {initials}
                 </div>
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white">{user.name}</h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Путешественник</p>
+                <h2 className="text-lg font-bold text-ink dark:text-sand-50">{user.name}</h2>
+                <p className="text-sm text-sand-500 dark:text-sand-400">Путешественник</p>
               </div>
 
               <div className="space-y-3 text-sm">
-                <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
+                <div className="flex items-center gap-3 text-sand-600 dark:text-sand-300">
                   <Mail className="w-4 h-4 text-primary-500 shrink-0" />
                   <span className="truncate">{user.email}</span>
                 </div>
                 {(user.memberSince || user.member_since) && (
-                  <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
+                  <div className="flex items-center gap-3 text-sand-600 dark:text-sand-300">
                     <Calendar className="w-4 h-4 text-primary-500 shrink-0" />
                     <span>
                       С нами с{' '}
@@ -95,11 +95,11 @@ export default function Cabinet() {
                     </span>
                   </div>
                 )}
-                <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
+                <div className="flex items-center gap-3 text-sand-600 dark:text-sand-300">
                   <Package className="w-4 h-4 text-primary-500 shrink-0" />
                   <span>{orders.length} заказов</span>
                 </div>
-                <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
+                <div className="flex items-center gap-3 text-sand-600 dark:text-sand-300">
                   <Heart className="w-4 h-4 text-red-500 shrink-0" />
                   <span>{favTours.length} в избранном</span>
                 </div>
@@ -114,7 +114,7 @@ export default function Cabinet() {
             </div>
 
             <div className="card p-4">
-              <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+              <h3 className="text-sm font-semibold text-sand-500 dark:text-sand-400 uppercase tracking-wide mb-3">
                 Быстрые ссылки
               </h3>
               <div className="space-y-1">
@@ -126,11 +126,11 @@ export default function Cabinet() {
                   <Link
                     key={item.to}
                     to={item.to}
-                    className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-700 text-gray-700 dark:text-gray-300 text-sm transition-colors"
+                    className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sand-50 dark:hover:bg-dark-700 text-sand-600 dark:text-sand-300 text-sm transition-colors"
                   >
                     <span>{item.icon}</span>
                     <span>{item.label}</span>
-                    <ChevronRight className="w-4 h-4 ml-auto text-gray-300" />
+                    <ChevronRight className="w-4 h-4 ml-auto text-sand-300 dark:text-sand-500" />
                   </Link>
                 ))}
               </div>
@@ -139,7 +139,7 @@ export default function Cabinet() {
 
           {/* правая часть */}
           <div className="lg:col-span-2">
-            <div className="flex gap-1 mb-5 bg-gray-100 dark:bg-dark-800 p-1 rounded-xl">
+            <div className="flex gap-1 mb-5 bg-sand-100 dark:bg-dark-800 p-1 rounded-xl">
               {TABS.map((t) => {
                 const Icon = t.icon
                 return (
@@ -149,8 +149,8 @@ export default function Cabinet() {
                     className={[
                       'flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors',
                       tab === t.id
-                        ? 'bg-white dark:bg-dark-700 text-gray-900 dark:text-white shadow-sm'
-                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200',
+                        ? 'bg-white dark:bg-dark-700 text-ink dark:text-sand-50 shadow-sm'
+                        : 'text-sand-500 dark:text-sand-400 hover:text-sand-600 dark:hover:text-sand-200',
                     ].join(' ')}
                   >
                     <Icon className="w-4 h-4" />
@@ -167,25 +167,25 @@ export default function Cabinet() {
 
             {tab === 'orders' && (
               <div className="card p-6">
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-5">Мои бронирования</h2>
+                <h2 className="text-lg font-bold text-ink dark:text-sand-50 mb-5">Мои бронирования</h2>
                 {loading ? (
                   <div className="space-y-3">
-                    {[1, 2].map((i) => <div key={i} className="h-24 rounded-xl bg-gray-100 dark:bg-dark-700 animate-pulse" />)}
+                    {[1, 2].map((i) => <div key={i} className="h-24 rounded-xl bg-sand-100 dark:bg-dark-700 animate-pulse" />)}
                   </div>
                 ) : orders.length === 0 ? (
                   <div className="text-center py-12">
                     <div className="text-5xl mb-4">✈️</div>
-                    <p className="text-gray-500 dark:text-gray-400 mb-4">Пока нет ни одного бронирования</p>
+                    <p className="text-sand-500 dark:text-sand-400 mb-4">Пока нет ни одного бронирования</p>
                     <Link to="/search" className="btn-primary">Найти тур</Link>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {[...orders].reverse().map((order) => (
-                      <div key={order.id} className="border border-gray-100 dark:border-dark-700 rounded-xl p-5">
+                      <div key={order.id} className="border border-sand-100 dark:border-dark-700 rounded-xl p-5">
                         <div className="flex items-start justify-between mb-3">
                           <div>
-                            <p className="text-xs text-gray-400 mb-0.5">Заказ #{order.id}</p>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-sand-400 dark:text-sand-500 mb-0.5">Заказ #{order.id}</p>
+                            <p className="text-xs text-sand-400 dark:text-sand-500">
                               {new Date(order.created_at || order.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
                             </p>
                           </div>
@@ -198,8 +198,8 @@ export default function Cabinet() {
                             <div key={idx} className="flex items-center gap-3">
                               <img src={item.tour?.image} alt={item.tour?.title} className="w-12 h-12 rounded-lg object-cover shrink-0" />
                               <div className="flex-1 min-w-0">
-                                <p className="font-medium text-gray-900 dark:text-white text-sm truncate">{item.tour?.title}</p>
-                                <p className="text-xs text-gray-400 flex items-center gap-1">
+                                <p className="font-medium text-ink dark:text-sand-50 text-sm truncate">{item.tour?.title}</p>
+                                <p className="text-xs text-sand-400 dark:text-sand-500 flex items-center gap-1">
                                   <MapPin className="w-3 h-3" />
                                   {item.tour?.city} · {item.travelers} чел.
                                 </p>
@@ -210,11 +210,11 @@ export default function Cabinet() {
                             </div>
                           ))}
                         </div>
-                        <div className="flex justify-between items-center pt-3 border-t border-gray-100 dark:border-dark-700">
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <div className="flex justify-between items-center pt-3 border-t border-sand-100 dark:border-dark-700">
+                          <div className="text-sm text-sand-500 dark:text-sand-400">
                             {order.contact?.name} · {order.contact?.phone}
                           </div>
-                          <div className="font-bold text-gray-900 dark:text-white">
+                          <div className="font-bold text-ink dark:text-sand-50">
                             Итого: {formatPrice(order.total)}
                           </div>
                         </div>
@@ -229,9 +229,9 @@ export default function Cabinet() {
               <div>
                 {favTours.length === 0 ? (
                   <div className="card p-12 text-center">
-                    <Heart className="w-12 h-12 text-gray-200 dark:text-dark-700 mx-auto mb-4" />
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Избранное пусто</h3>
-                    <p className="text-gray-400 mb-6">
+                    <Heart className="w-12 h-12 text-sand-200 dark:text-dark-700 mx-auto mb-4" />
+                    <h3 className="text-xl font-bold text-ink dark:text-sand-50 mb-2">Избранное пусто</h3>
+                    <p className="text-sand-400 dark:text-sand-500 mb-6">
                       Нажмите ♥ на карточке тура, чтобы добавить его сюда
                     </p>
                     <Link to="/search" className="btn-primary">Найти туры</Link>

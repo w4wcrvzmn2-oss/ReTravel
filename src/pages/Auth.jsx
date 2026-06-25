@@ -70,7 +70,7 @@ export default function Auth() {
   const displayError = localError || error
 
   return (
-    <div className="min-h-screen pt-16 flex items-center justify-center bg-gray-50 dark:bg-dark-900 px-4">
+    <div className="min-h-screen pt-16 flex items-center justify-center bg-sand-50 dark:bg-dark-950 px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex flex-col items-center gap-2">
@@ -79,10 +79,10 @@ export default function Auth() {
             </div>
             <span className="text-sm font-bold text-primary-500">ReTravel</span>
           </Link>
-          <h1 className="text-2xl font-black text-gray-900 dark:text-white mt-3">
+          <h1 className="text-2xl font-black text-ink dark:text-sand-50 mt-3">
             {tab === 'login' ? 'Добро пожаловать' : 'Создать аккаунт'}
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">
+          <p className="text-sand-500 dark:text-sand-400 mt-1 text-sm">
             {tab === 'login'
               ? 'Войдите, чтобы управлять бронированиями'
               : 'Регистрация бесплатна'}
@@ -90,7 +90,7 @@ export default function Auth() {
         </div>
 
         <div className="card p-8">
-          <div className="flex bg-gray-100 dark:bg-dark-700 rounded-xl p-1 mb-6">
+          <div className="flex bg-sand-100 dark:bg-dark-700 rounded-xl p-1 mb-6">
             {[
               { id: 'login', label: 'Войти' },
               { id: 'register', label: 'Регистрация' },
@@ -101,8 +101,8 @@ export default function Auth() {
                 className={[
                   'flex-1 py-2 rounded-lg text-sm font-semibold transition-all',
                   tab === t.id
-                    ? 'bg-white dark:bg-dark-800 text-gray-900 dark:text-white shadow-sm'
-                    : 'text-gray-500 dark:text-gray-400',
+                    ? 'bg-white dark:bg-dark-800 text-ink dark:text-sand-50 shadow-sm'
+                    : 'text-sand-500 dark:text-sand-400',
                 ].join(' ')}
               >
                 {t.label}
@@ -113,7 +113,7 @@ export default function Auth() {
           <form onSubmit={submit} className="space-y-4">
             {tab === 'register' && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Имя</label>
+                <label className="block text-sm font-medium text-ink dark:text-sand-200 mb-1.5">Имя</label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
@@ -157,7 +157,7 @@ export default function Auth() {
                 <button
                   type="button"
                   onClick={() => setShowPass(!showPass)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sand-400 hover:text-sand-600 dark:hover:text-sand-200"
                 >
                   {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -182,7 +182,7 @@ export default function Auth() {
           </form>
 
           {tab === 'login' && (
-            <p className="text-center text-sm text-gray-400 mt-4">
+            <p className="text-center text-sm text-sand-500 dark:text-sand-400 mt-4">
               Нет аккаунта?{' '}
               <button
                 onClick={() => setTab('register')}
@@ -194,7 +194,7 @@ export default function Auth() {
           )}
         </div>
 
-        <p className="text-center text-xs text-gray-400 mt-4">
+        <p className="text-center text-xs text-sand-400 dark:text-sand-500 mt-4">
           Нажимая «Войти», вы соглашаетесь с условиями использования
         </p>
       </div>

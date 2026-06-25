@@ -153,14 +153,14 @@ export default function Flights() {
       <div className="page-container py-8">
         {!searched ? (
           <div className="text-center py-20">
-            <Plane className="w-16 h-16 text-gray-200 dark:text-dark-700 mx-auto mb-4" />
-            <p className="text-gray-400">Введите параметры поиска и нажмите «Найти билеты»</p>
+            <Plane className="w-16 h-16 text-sand-200 dark:text-dark-700 mx-auto mb-4" />
+            <p className="text-sand-400 dark:text-sand-500">Введите параметры поиска и нажмите «Найти билеты»</p>
           </div>
         ) : results.length === 0 ? (
           <div className="card p-12 text-center">
-            <AlertCircle className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <AlertCircle className="w-12 h-12 text-sand-300 dark:text-sand-500 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Рейсов не найдено</h3>
-            <p className="text-gray-400">Попробуйте изменить дату или направление</p>
+            <p className="text-sand-400 dark:text-sand-500">Попробуйте изменить дату или направление</p>
           </div>
         ) : (
           <>
@@ -178,7 +178,7 @@ export default function Flights() {
                     <option key={o.id} value={o.id}>{o.label}</option>
                   ))}
                 </select>
-                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-sand-400 dark:text-sand-500 pointer-events-none" />
               </div>
             </div>
 
@@ -214,38 +214,38 @@ function FlightCard({ flight, passengers, flightClass, onBook }) {
         {/* авиакомпания */}
         <div className="shrink-0 w-32">
           <p className="font-bold text-gray-900 dark:text-white text-sm">{flight.airline}</p>
-          <p className="text-xs text-gray-400">{flight.flightNumber}</p>
+          <p className="text-xs text-sand-400 dark:text-sand-500">{flight.flightNumber}</p>
         </div>
 
         {/* маршрут */}
         <div className="flex-1 flex items-center gap-3">
           <div className="text-center">
             <p className="text-xl font-black text-gray-900 dark:text-white">{flight.departureTime}</p>
-            <p className="text-xs text-gray-400">{flight.from} ({flight.fromCode})</p>
+            <p className="text-xs text-sand-400 dark:text-sand-500">{flight.from} ({flight.fromCode})</p>
           </div>
 
           <div className="flex-1 flex flex-col items-center gap-1">
-            <p className="text-xs text-gray-400 flex items-center gap-1">
+            <p className="text-xs text-sand-400 dark:text-sand-500 flex items-center gap-1">
               <Clock className="w-3 h-3" />
               {flight.durationLabel}
             </p>
             <div className="relative w-full">
-              <div className="h-px bg-gray-200 dark:bg-dark-600 w-full" />
+              <div className="h-px bg-sand-200 dark:bg-dark-600 w-full" />
               <Plane className="absolute left-1/2 -translate-x-1/2 -top-2.5 w-4 h-4 text-primary-500" />
             </div>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-sand-400 dark:text-sand-500">
               {flight.stops === 0 ? 'Прямой' : `${flight.stops} пересадка: ${flight.stopCity}`}
             </p>
           </div>
 
           <div className="text-center">
             <p className="text-xl font-black text-gray-900 dark:text-white">{flight.arrivalTime}</p>
-            <p className="text-xs text-gray-400">{flight.to} ({flight.toCode})</p>
+            <p className="text-xs text-sand-400 dark:text-sand-500">{flight.to} ({flight.toCode})</p>
           </div>
         </div>
 
         {/* багаж + мест */}
-        <div className="hidden md:flex flex-col items-center gap-1 text-xs text-gray-400 shrink-0">
+        <div className="hidden md:flex flex-col items-center gap-1 text-xs text-sand-400 dark:text-sand-500 shrink-0">
           <span className="flex items-center gap-1">
             <Briefcase className="w-3.5 h-3.5" />
             {flight.baggage}
@@ -257,7 +257,7 @@ function FlightCard({ flight, passengers, flightClass, onBook }) {
         <div className="flex md:flex-col items-center md:items-end gap-3 md:gap-1 shrink-0">
           <div className="md:text-right">
             <p className="text-xl font-black text-accent-500">{formatPrice(total)}</p>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-sand-400 dark:text-sand-500">
               {passengers > 1 ? `за ${passengers} пасс.` : 'за пассажира'}
             </p>
           </div>

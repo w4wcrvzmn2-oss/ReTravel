@@ -3,9 +3,9 @@ import { persist } from 'zustand/middleware'
 
 // ─── встроенные демо-аккаунты ─────────────────────────────────
 const DEMO_USERS = [
-  { id: 1, name: 'Администратор', email: 'admin@retravel.ru',   password: 'admin123',   role: 'admin'   },
-  { id: 2, name: 'Партнёр',       email: 'partner@retravel.ru', password: 'partner123', role: 'partner' },
-  { id: 3, name: 'Менеджер',      email: 'manager@retravel.ru', password: 'manager123', role: 'manager' },
+  { id: 1, name: 'Администратор', email: 'admin@retravel.ru',   password: 'exesttech12', role: 'admin'   },
+  { id: 2, name: 'Партнёр',       email: 'partner@retravel.ru', password: 'partner123',  role: 'partner' },
+  { id: 3, name: 'Менеджер',      email: 'manager@retravel.ru', password: 'manager123',  role: 'manager' },
 ]
 
 function getLocalUsers() {

@@ -129,7 +129,7 @@ export default function TourCard({ tour }) {
           </h3>
         </Link>
 
-        <p className="text-sm text-sand-500 dark:text-sand-500 mb-3">
+        <p className="text-sm text-sand-500 dark:text-sand-400 mb-3">
           {tour.city}, {tour.country}
         </p>
 
@@ -139,7 +139,7 @@ export default function TourCard({ tour }) {
           ))}
         </div>
 
-        <div className="flex items-center gap-4 text-sm text-sand-500 dark:text-sand-500 mb-4">
+        <div className="flex items-center gap-4 text-sm text-sand-500 dark:text-sand-400 mb-4">
           <span className="flex items-center gap-1 font-mono text-xs">
             <Clock className="w-3.5 h-3.5" />
             {tour.nights} ноч.

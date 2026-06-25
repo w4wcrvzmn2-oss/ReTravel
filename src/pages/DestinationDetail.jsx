@@ -90,7 +90,7 @@ export default function DestinationDetail() {
             <RevealSection>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">
                 Туры в {dest.name}
-                <span className="ml-3 text-base font-normal text-gray-400">
+                <span className="ml-3 text-base font-normal text-sand-400 dark:text-sand-500">
                   ({destTours.length} тура)
                 </span>
               </h2>
@@ -105,11 +105,11 @@ export default function DestinationDetail() {
           </>
         ) : (
           <div className="text-center py-20">
-            <Plane className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <Plane className="w-12 h-12 text-sand-300 dark:text-sand-500 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
               Туры появятся скоро
             </h3>
-            <p className="text-gray-400 mb-6">
+            <p className="text-sand-400 dark:text-sand-500 mb-6">
               Мы работаем над добавлением туров в {dest.name}
             </p>
             <Link to="/search" className="btn-primary">
